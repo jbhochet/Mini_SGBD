@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DiskManager {
-    private static final int DEFAULT_PAGE_SIZE = 4096;
-
+    
     private static DiskManager instance;
     private List<File> dataFiles;
     private List<PageId> deallocatedPages;
@@ -18,7 +17,6 @@ public class DiskManager {
     public DiskManager() {
         this.dataFiles = new ArrayList<>();
         this.deallocatedPages = new ArrayList<>();
-        createDataFiles(DBParams.DMFileCount);
     }
 
     // Singleton : getInstance method
@@ -30,9 +28,9 @@ public class DiskManager {
         return instance;
     }
 
-       // Allouer une page
+  // Allouer une page
     public PageId AllocPage() {
-        int i = 1;
+    	int i = 0;
         PageId allocatedPageId = null;
         
         // Vérifie s'il y a des pages désallouées disponibles.
@@ -40,7 +38,7 @@ public class DiskManager {
             // Si oui, allouer la première page désallouée.
             allocatedPageId = deallocatedPages.remove(0);
         } else {
-        	String fileName = DBPath + File.separator + "F" + i + ".data";
+        	String fileName = DBParams.DBPath + File.separator + "F" + i + ".data";
         	i++;
             File file = new File(fileName);
             File target=file;
@@ -54,7 +52,7 @@ public class DiskManager {
             }
             // Parcoure les fichiers de données pour trouver un fichier approprié.
             for (File f : dataFiles) {
-                if (f.length() % DBParams.pageSize == 0) {
+                if (f.length() % DBParams.SGBDPageSize == 0) {
                     if (target == null || f.length() < target.length()) {
                     	target = f;
                     }
@@ -65,7 +63,7 @@ public class DiskManager {
                 return null;
             }
             // Calculer l'indice de la page allouée dans le fichier cible.
-            int pageIdx = (int) (target.length() / DBParams.pageSize);
+            int pageIdx = (int) (target.length() / DBParams.SGBDPageSize);
              
             // Créer l'identifiant de la page allouée.
             allocatedPageId = new PageId(dataFiles.indexOf(target), pageIdx);
@@ -73,11 +71,11 @@ public class DiskManager {
 
             pageIdx++;
             //ajoute une nouvelle page vide au fichier.
-            if (pageIdx * DBParams.pageSize >= target.length()) {
+            if (pageIdx * DBParams.SGBDPageSize >= target.length()) {
                 try {
                     RandomAccessFile randomAccessFile = new RandomAccessFile(target, "rw");
                     randomAccessFile.seek(target.length());
-                    randomAccessFile.write(new byte[DBParams.pageSize]); // Écrire des données vides pour créer une nouvelle page 4 KO
+                    randomAccessFile.write(new byte[DBParams.SGBDPageSize]); // Écrire des données vides pour créer une nouvelle page 4 KO
                     randomAccessFile.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -89,10 +87,11 @@ public class DiskManager {
         }
         return allocatedPageId;
     }
+
     public void ReadPage (PageId pageId, ByteBuffer buffer) throws IOException {
         String filePath = DBParams.DBPath + File.separator + "F" + pageId.getFileIdx() + ".data";
         File file = new File(filePath);
-        if (!file.exists() || file.length() < pageId.getPageIdx() + DEFAULT_PAGE_SIZE) {
+        if (!file.exists() || file.length() < pageId.getPageIdx() + DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "r");
@@ -107,7 +106,7 @@ public class DiskManager {
     public void WritePage(PageId pageId, ByteBuffer buffer) throws IOException {
         String filePath = DBParams.DBPath + File.separator + "F" + pageId.getFileIdx() + ".data";
         File file = new File(filePath);
-        if (!file.exists() || file.length() < pageId.getPageIdx() + DEFAULT_PAGE_SIZE) {
+        if (!file.exists() || file.length() < pageId.getPageIdx() + DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         if (pageId.getPageIdx() < 0 || pageId.getPageIdx() >= file.length()) {
@@ -119,29 +118,13 @@ public class DiskManager {
         dataFile.close();
     }
 
-    private void createDataFiles(int fileCount) {
-        for (int i = 1; i <= fileCount; i++) {
-            String fileName = DBParams.DBPath + File.separator + "F" + i + ".data";
-            File file = new File(fileName);
-            try {
-                file.createNewFile();
-                dataFiles.add(file); // Add the created file to the list
-                System.out.println("File created: " + fileName);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.err.println("Error creating file.");
-            }
-        }
-    }
+   
 
     public void DeallocPage(PageId pageId) {
         deallocatedPages.add(pageId);
     }
 
   
-    /**
-     * @return the numbers of allocated pages
-     */
     public int GetCurrentCountAllocPages() {
         int count;
         count=(DBParams.DMFileCount)*dataFiles.size();
