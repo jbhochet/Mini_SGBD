@@ -42,7 +42,7 @@ public class DiskManager {
             File target = null;
             // Parcoure les fichiers de données pour trouver un fichier approprié.
             for (File file : dataFiles) {
-                if (file.length() % DBParams.pageSize == 0) {
+                if (file.length() % DBParams.SGBDPageSize == 0) {
                     if (target == null || file.length() < target.length()) {
                     	target = file;
                     }
@@ -53,18 +53,18 @@ public class DiskManager {
                 return null;
             }
             // Calculer l'indice de la page allouée dans le fichier cible.
-            int pageIdx = (int) (target.length() / DBParams.pageSize);
+            int pageIdx = (int) (target.length() / DBParams.SGBDPageSize);
             
             // Créer l'identifiant de la page allouée.
             allocatedPageId = new PageId(dataFiles.indexOf(target), pageIdx);
 
             pageIdx++;
             //ajoute une nouvelle page vide au fichier.
-            if (pageIdx * DBParams.pageSize >= target.length()) {
+            if (pageIdx * DBParams.SGBDPageSize >= target.length()) {
                 try {
                     RandomAccessFile randomAccessFile = new RandomAccessFile(target, "rw");
                     randomAccessFile.seek(target.length());
-                    randomAccessFile.write(new byte[DBParams.pageSize]); // Écrire des données vides pour créer une nouvelle page 4 KO
+                    randomAccessFile.write(new byte[DBParams.SGBDPageSize]); // Écrire des données vides pour créer une nouvelle page 4 KO
                     randomAccessFile.close();
                 } catch (IOException e) {
                     e.printStackTrace();
