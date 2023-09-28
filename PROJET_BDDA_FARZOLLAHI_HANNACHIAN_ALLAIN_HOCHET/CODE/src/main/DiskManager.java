@@ -3,10 +3,13 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiskManager {
+    private static final int DEFAULT_PAGE_SIZE = 4096;
+
     private static DiskManager instance;
     private List<File> dataFiles;
     private List<PageId> deallocatedPages;
@@ -74,7 +77,34 @@ public class DiskManager {
         return allocatedPageId;
     }
 
-    public void ReadPage(PageId pageId, byte[] buff) {
+    public void ReadPage (PageId pageId, ByteBuffer buffer) throws IOException {
+        String filePath = DBParams.DBPath + File.separator + "F" + pageId.getFileIdx() + ".data";
+        File file = new File(filePath);
+        if (!file.exists() || file.length() < pageId.getPageIdx() + DEFAULT_PAGE_SIZE) {
+            throw new IllegalArgumentException("La page spécifiée n'existe pas.");
+        }
+        RandomAccessFile dataFile = new RandomAccessFile(file, "r");
+        dataFile.seek(pageId.getPageIdx()); // modifier la position du pointeur
+        int bytesRead = dataFile.getChannel().read(buffer); // Lire le contenu de la page dans le ByteBuffer
+        if (bytesRead != -1) { // En Java, la valeur -1 est retournée pour indiquer la fin du fichier
+            buffer.flip(); // Préparer le ByteBuffer pour la lecture
+        }
+        dataFile.close();
+    }
+
+    public void WritePage(PageId pageId, ByteBuffer buffer) throws IOException {
+        String filePath = DBParams.DBPath + File.separator + "F" + pageId.getFileIdx() + ".data";
+        File file = new File(filePath);
+        if (!file.exists() || file.length() < pageId.getPageIdx() + DEFAULT_PAGE_SIZE) {
+            throw new IllegalArgumentException("La page spécifiée n'existe pas.");
+        }
+        if (pageId.getPageIdx() < 0 || pageId.getPageIdx() >= file.length()) {
+            throw new IllegalArgumentException("L'indice de page spécifié est hors limites.");
+        }
+        RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
+        dataFile.seek(pageId.getPageIdx()); // Positionner le pointeur à l'emplacement spécifié
+        dataFile.getChannel().write(buffer); // Écrire le contenu du ByteBuffer dans le fichier
+        dataFile.close();
     }
 
     private void createDataFiles(int fileCount) {
