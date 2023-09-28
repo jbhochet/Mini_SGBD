@@ -1,17 +1,23 @@
 @echo off
-set "src_dir=C:\Users\User\Desktop\PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET\CODE\src"
-set "out_dir=C:\Users\User\Desktop\PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET\DB"
-set "main_class=TestDB"
+:: The script directory
+setlocal enabledelayedexpansion
+for %%i in (%~dp0) do set "SCRIPT_DIR=%%~fi"
 
+:: Configuration
+set "JAVA_VERSION=17"
+set "SRC_DIR=..\src"
+set "BIN_DIR=..\bin"
+set "MAIN_CLASS=main.Main"
 
-rem Compile the Java source files in the source directory
-javac -d "%out_dir%" "%src_dir%\*.java"
+:: Additional Argument
+set "ARGUMENT=../DB"
 
+:: Clear bin directory
+rmdir /s /q "%BIN_DIR%"
+mkdir "%BIN_DIR%"
 
-rem Run the Java program
-cd "%out_dir%"
-java %main_class%
+:: Compile
+javac --release !JAVA_VERSION! --source-path "%SRC_DIR%" -d "%BIN_DIR%" "%SRC_DIR%\main\Main.java"
 
-
-rem Return to the project root directory (if this is the correct path)
-cd "..\..\.."
+:: Run with Argument
+java -cp "%BIN_DIR%" %MAIN_CLASS% "%ARGUMENT%"

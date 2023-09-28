@@ -31,9 +31,9 @@ public class DiskManager {
     }
 
     // Allouer une page
-    public PageId AllocPage() {
+       public PageId AllocPage() {
         PageId allocatedPageId = null;
-
+        
         // Vérifie s'il y a des pages désallouées disponibles.
         if (!deallocatedPages.isEmpty()) {
             // Si oui, allouer la première page désallouée.
@@ -42,30 +42,29 @@ public class DiskManager {
             File target = null;
             // Parcoure les fichiers de données pour trouver un fichier approprié.
             for (File file : dataFiles) {
-                if (file.length() % pageSize == 0) {
+                if (file.length() % DBParams.pageSize == 0) {
                     if (target == null || file.length() < target.length()) {
-                        target = file;
+                    	target = file;
                     }
                 }
             }
-            if (target == null || target.length() >= Integer.MAX_VALUE - pageSize) {
+            if (target == null || target.length() >= DBParams.DMFileCount * 4096) {
                 System.err.println("Aucun fichier approprié trouvé pour l'allocation.");
                 return null;
             }
             // Calculer l'indice de la page allouée dans le fichier cible.
-            int pageIdx = (int) (target.length() / pageSize);
-
+            int pageIdx = (int) (target.length() / DBParams.pageSize);
+            
             // Créer l'identifiant de la page allouée.
             allocatedPageId = new PageId(dataFiles.indexOf(target), pageIdx);
 
             pageIdx++;
-            // ajoute une nouvelle page vide au fichier.
-            if (pageIdx * pageSize >= target.length()) {
+            //ajoute une nouvelle page vide au fichier.
+            if (pageIdx * DBParams.pageSize >= target.length()) {
                 try {
                     RandomAccessFile randomAccessFile = new RandomAccessFile(target, "rw");
                     randomAccessFile.seek(target.length());
-                    randomAccessFile.write(new byte[pageSize]); // Écrire des données vides pour créer une nouvelle page
-                                                                // 4 KO
+                    randomAccessFile.write(new byte[DBParams.pageSize]); // Écrire des données vides pour créer une nouvelle page 4 KO
                     randomAccessFile.close();
                 } catch (IOException e) {
                     e.printStackTrace();
