@@ -123,6 +123,7 @@ public class DiskManager {
     }
 
     public void DeallocPage(PageId pageId) {
+        deallocatedPages.add(pageId);
     }
 
     public int GetCurrenctCountAllocPages() {
