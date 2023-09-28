@@ -126,8 +126,15 @@ public class DiskManager {
         deallocatedPages.add(pageId);
     }
 
-    public int GetCurrenctCountAllocPages() {
-        return 0;
+  
+    /**
+     * @return the numbers of allocated pages
+     */
+    public int GetCurrentCountAllocPages() {
+        int count;
+        count=(DBParams.DMFileCount)*dataFiles.size();
+        count=count-deallocatedPages.size();
+        return count;
     }
 
 }
