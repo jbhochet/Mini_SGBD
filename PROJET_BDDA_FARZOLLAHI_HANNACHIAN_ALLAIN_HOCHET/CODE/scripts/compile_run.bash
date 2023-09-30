@@ -26,8 +26,8 @@ javac \
 java -jar $LIB_DIR/junit-platform-console-standalone-1.9.3.jar -cp $BIN_DIR --scan-classpath
 
 if [ $? != 0 ]; then
-    echo "Unit test failure!"
-    exit 1
+    echo "Unit test failure! Continue? (press enter for yes, C-c to exit)"
+    read
 fi
 
 # Run
