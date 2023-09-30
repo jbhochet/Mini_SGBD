@@ -1,10 +1,10 @@
-package JUnit_Test;
+package test;
 
 import org.junit.jupiter.api.Test;
 
-import Main.PageId;
-import Main.DBParams;
-import Main.DiskManager;
+import main.PageId;
+import main.DBParams;
+import main.DiskManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
