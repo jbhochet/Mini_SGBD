@@ -58,7 +58,7 @@ public class DiskManager {
         raf.seek(dataFiles[fileId].length());
         raf.write(ByteBuffer.allocate(DBParams.SGBDPageSize).array());
         raf.close();
-        PageId page = new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize);
+        PageId page = new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize-1);
         return page;
     }
 
