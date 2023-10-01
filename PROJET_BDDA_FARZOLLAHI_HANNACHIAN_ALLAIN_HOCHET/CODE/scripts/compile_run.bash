@@ -1,13 +1,13 @@
 DB_PATH=$(realpath $1)
 
 # The script must work every time
-cd $(dirname ${BASH_SOURCE[0]})
+cd $(dirname ${BASH_SOURCE[0]})/..
 
 # Configuration
 JAVA_VERSION=17
-SRC_DIR=../src
-BIN_DIR=../bin
-LIB_DIR=../lib
+SRC_DIR=src
+BIN_DIR=bin
+LIB_DIR=lib
 MAIN_CLASS=main.Main
 SOURCES_FILES=$(find $SRC_DIR -name "*.java")
 

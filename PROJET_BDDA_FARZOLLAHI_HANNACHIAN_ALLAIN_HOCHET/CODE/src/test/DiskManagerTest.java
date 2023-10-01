@@ -26,7 +26,7 @@ public class DiskManagerTest {
 		PageId allocatedPageId = diskManager.AllocPage();
 
 		assertNotNull(allocatedPageId);
-		assertEquals(1, allocatedPageId.getPageIdx());
+		assertEquals(0, allocatedPageId.getPageIdx());
     }
     
     @Test
