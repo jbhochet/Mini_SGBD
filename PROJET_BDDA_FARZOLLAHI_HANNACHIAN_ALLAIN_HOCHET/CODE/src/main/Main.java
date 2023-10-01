@@ -11,7 +11,8 @@ public class Main {
         DBParams.DBPath = dbPath;
         DBParams.DMFileCount = 4;
         DBParams.SGBDPageSize = 4096;
-
+        DBParams.FrameCount = 2;
+        
         try {
             diskManager = DiskManager.getInstance();
         } catch (IOException e) {
