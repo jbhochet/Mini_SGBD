@@ -6,8 +6,8 @@ my_os=sys.platform
 print(my_os)
 
 if my_os=="linux" or my_os=="macOS":
-    lscript=subprocess.run(['bash','compile_run.bash'],text=True,input='../DB')
+    lscript=subprocess.run(['bash','compile_run.bash','../DB'])
     print("Completed !")
 else:
-    wscript=subprocess.run(['batch','compile_and_run.bat'],text=True,input='../DB')
+    wscript=subprocess.run(['batch','compile_and_run.bat','../DB'])
     print("Completed")
