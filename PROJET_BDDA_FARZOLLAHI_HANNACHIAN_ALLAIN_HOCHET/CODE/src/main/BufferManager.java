@@ -62,4 +62,15 @@ public class BufferManager {
         }
     }
 
+    public void FlushAll() throws IOException {
+    	for(Frame fr : bufferPool) {
+    		if(fr.getDirty()){ 
+    			PageId pageId = fr.getPageIdx();
+    			ByteBuffer buffer = fr.getBuffer();
+    			DiskManager.getInstance().WritePage(pageId,buffer); // l’écriture de toutes les pages dont le flag dirty = 1 (true) sur disque
+    		}
+    		fr.reset(); //la remise à 0 de tous les flags/informations et contenus des buffers (buffer pool « vide »)
+    	}
+    }
+
 }
