@@ -22,6 +22,11 @@ javac \
     -d $BIN_DIR \
     $SOURCES_FILES
 
+if [ $? != 0 ]; then
+    echo "Errors in source files!"
+    exit 1
+fi
+
 # Run tests
 java -jar $LIB_DIR/junit-platform-console-standalone-1.9.3.jar -cp $BIN_DIR --scan-classpath
 
