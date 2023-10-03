@@ -48,4 +48,11 @@ public class Frame {
         return accessCount;
     }
 
+    public void reset() {
+        pageIdx = null;
+        pinCount = 0;
+        dirty = false;
+        accessCount = 0;
+    }
+
 }
