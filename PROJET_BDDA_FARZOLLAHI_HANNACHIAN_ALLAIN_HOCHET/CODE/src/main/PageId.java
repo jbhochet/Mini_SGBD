@@ -16,4 +16,16 @@ public class PageId {
     public int getPageIdx() {
         return PageIdx;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PageId))
+            return false;
+        PageId page = (PageId) obj;
+        if (this == page)
+            return true;
+        if ((FileIdx == page.getFileIdx()) && (PageIdx == page.getPageIdx()))
+            return true;
+        return false;
+    }
 }
