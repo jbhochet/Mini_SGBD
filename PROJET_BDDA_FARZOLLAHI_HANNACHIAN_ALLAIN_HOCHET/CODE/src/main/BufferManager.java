@@ -51,7 +51,19 @@ public class BufferManager {
         return frame.getBuffer();
     }
 
-    public void FreePage(PageId pageIdx, int valDirty) {
+    public PageId DetermineNewPage() {
+        if (bufferPool.length == 0)
+            return null; // Gérer le cas où le tableau bufferPool est vide
+        Frame lFUFrame = bufferPool[0]; // Initialiser la première frame comme la moins fréquemment utilisée
+        for (int i = 1; i < bufferPool.length; i++) {
+            Frame frame = bufferPool[i];
+            if (frame.getAccessCount() < lFUFrame.getAccessCount())
+                lFUFrame = frame;
+        }
+        return lFUFrame.getPageIdx();
+    }
+
+    public void FreePage(PageId pageIdx, int valDirty) throws IOException {
         Frame frame = FindFrame(pageIdx);
         if (frame != null) {
             frame.decrementPinCount(); // Décrémenter le pin_count
@@ -59,6 +71,21 @@ public class BufferManager {
                 frame.setDirty(true); // 1 indique que la page est marquée comme dirty
             else
                 frame.setDirty(false); // Sinon la page est marquée comme clean
+        }
+        if (frame.getPinCount() == 0) {
+            frame.incrementAccessCount(); // Incrémenter le compteur LFU
+            Frame frameLFU = ReplaceLFU(pageIdx); // Chercher la frame LFU
+            if (frameLFU != null) {
+                PageId newPageIdx = DetermineNewPage(); // Charger la nouvelle page depuis le disque
+                ByteBuffer newPageBuffer = ByteBuffer.allocate(DBParams.SGBDPageSize); // Créez un nouveau buffer pour la nouvelle page
+                DiskManager.getInstance().ReadPage(newPageIdx, newPageBuffer); // Chargez la nouvelle page depuis le disque
+                frameLFU.setPageIdx(newPageIdx); // Mettre à jour le PageId avec le nouveau
+                frameLFU.setBuffer(newPageBuffer); // Mettre à jour le buffer avec le contenu de la nouvelle page
+                frameLFU.setDirty(false); // La nouvelle page est clean
+                frameLFU.resetAccessCount(); // Réinitialiser le compteur LFU
+                if (frameLFU.getDirty()) // Ecrire la page retirée sur le disque si elle est marquée comme dirty
+                    DiskManager.getInstance().WritePage(frameLFU.getPageIdx(), frameLFU.getBuffer()); // Écrire la page sur le disque
+            }
         }
     }
 

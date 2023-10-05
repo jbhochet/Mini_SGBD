@@ -20,12 +20,20 @@ public class Frame {
         return buffer;
     }
 
+    public void setBuffer(ByteBuffer buffer) {
+        this.buffer = buffer;
+    }
+
     public PageId getPageIdx() {
         return pageIdx;
     }
 
     public void setPageIdx(PageId pageIdx) {
         this.pageIdx = pageIdx;
+    }
+
+    public int getPinCount() {
+        return pinCount;
     }
 
     public void incrementPinCount() {
@@ -46,6 +54,14 @@ public class Frame {
 
     public int getAccessCount() {
         return accessCount;
+    }
+
+    public void incrementAccessCount() {
+        accessCount++;
+    }
+
+    public void resetAccessCount() {
+        this.accessCount = 0;
     }
 
     public void reset() {
