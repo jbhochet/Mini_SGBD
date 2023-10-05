@@ -4,16 +4,14 @@ import java.nio.ByteBuffer;
 
 public class Frame {
     private ByteBuffer buffer;
-    private PageId pageIdx;
+    private PageId pageId;
     private int pinCount; // Le compteur associé à une page en mémoire indiquant le nombre de références actives à un élément
     private boolean dirty; // Pour vérifier si un élément a été modifié depuis sa dernière lecture ou écriture
-    private int accessCount; // Le nombre d'accès à une page spécifique associée à une frame
     public Frame() {
         buffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
-        pageIdx = null;
+        pageId = null;
         pinCount = 0;
         dirty = false;
-        accessCount = 0;
     }
 
     public ByteBuffer getBuffer() {
@@ -24,13 +22,10 @@ public class Frame {
         this.buffer = buffer;
     }
 
-    public PageId getPageIdx() {
-        return pageIdx;
+    public PageId getPageId() {
+        return pageId;
     }
 
-    public void setPageIdx(PageId pageIdx) {
-        this.pageIdx = pageIdx;
-    }
 
     public int getPinCount() {
         return pinCount;
@@ -48,27 +43,20 @@ public class Frame {
         return dirty;
     }
 
-    public void setDirty(boolean dirty) {
-        this.dirty = dirty;
+    public void setDirty( ) {
+        this.dirty = true;
     }
 
-    public int getAccessCount() {
-        return accessCount;
+    public void replacePage(PageId p) {
+    	reset();
+    	pageId = p;
     }
-
-    public void incrementAccessCount() {
-        accessCount++;
-    }
-
-    public void resetAccessCount() {
-        this.accessCount = 0;
-    }
+ 
 
     public void reset() {
-        pageIdx = null;
+        pageId = null;
         pinCount = 0;
         dirty = false;
-        accessCount = 0;
     }
 
 }

@@ -3,7 +3,9 @@ package main;
 public class PageId {
     private int FileIdx;
     private int PageIdx;
+    private int accessCount;
 
+    
     public PageId(int fileIdx, int pageIdx) {
         this.FileIdx = fileIdx;
         this.PageIdx = pageIdx;
@@ -16,6 +18,15 @@ public class PageId {
     public int getPageIdx() {
         return PageIdx;
     }
+    
+    public int getAccessCount() {
+        return accessCount;
+    }
+
+    public void incrementAccessCount() {
+        accessCount++;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
