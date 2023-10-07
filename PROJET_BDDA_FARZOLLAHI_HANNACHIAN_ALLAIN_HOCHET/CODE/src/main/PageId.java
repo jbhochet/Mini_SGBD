@@ -1,14 +1,14 @@
 package main;
 
 public class PageId {
+    private int AccessCount;
     private int FileIdx;
     private int PageIdx;
-    private int accessCount;
 
-    
     public PageId(int fileIdx, int pageIdx) {
         this.FileIdx = fileIdx;
         this.PageIdx = pageIdx;
+        this.AccessCount = 0; // Initialize access count to 0
     }
 
     public int getFileIdx() {
@@ -18,25 +18,30 @@ public class PageId {
     public int getPageIdx() {
         return PageIdx;
     }
-    
+
     public int getAccessCount() {
-        return accessCount;
+        return AccessCount;
     }
 
     public void incrementAccessCount() {
-        accessCount++;
+        AccessCount++;
     }
-
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof PageId))
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
-        PageId page = (PageId) obj;
-        if (this == page)
-            return true;
-        if ((FileIdx == page.getFileIdx()) && (PageIdx == page.getPageIdx()))
-            return true;
-        return false;
+        }
+        PageId other = (PageId) obj;
+        System.out.println("Comparing " + this + " with " + other);
+        return FileIdx == other.FileIdx && PageIdx == other.PageIdx;
+    }
+
+    @Override
+    public String toString() {
+        return "PageId(FileIdx=" + FileIdx + ", PageIdx=" + PageIdx + ", AccessCount=" + AccessCount + ")";
     }
 }

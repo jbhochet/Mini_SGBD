@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class BufferManager {
-	private static BufferManager instance = null; // Une seule instance de la classe est créée
+	private static BufferManager instance = null;
 	private Frame[] bufferPool;
 
 	public BufferManager() {
@@ -21,64 +21,84 @@ public class BufferManager {
 
 	public Frame FindFrame(PageId pageIdx) {
 		for (Frame frame : bufferPool) {
-			if (frame.getPageId() != null && frame.getPageId().equals(pageIdx)) // Si la frame contient la page qu'on
-																					// recherche
+			if (frame.getPageId() != null && frame.getPageId().equals(pageIdx)) {
+				System.out.println("Access Count for Page " + pageIdx + ": " + frame.getPageId().getAccessCount());
 				return frame;
+			}
 		}
-		return null; // Retourne null si la page n'est pas trouvée dans le pool
+		System.out.println("Access Count for Page " + pageIdx + " not found!");
+		return new Frame();
 	}
-
 
 	public Frame ReplaceLFU(PageId pageId) throws IOException {
-	    Frame frameToReplace = null;
-	    int minRefCount = Integer.MAX_VALUE;
+		Frame frameToReplace = null;
+		int minRefCount = Integer.MAX_VALUE;
 
-	    for (Frame frame : bufferPool) {
-	        if (frame.getPageId().getAccessCount() < minRefCount && frame.getPinCount() == 0) {
-	            minRefCount = frame.getPageId().getAccessCount();
-	            frameToReplace = frame;
-	        }
-	    }
+		for (Frame frame : bufferPool) {
+			if (frame.getPageId() != null && frame.getPageId().getAccessCount() < minRefCount
+					&& frame.getPinCount() == 0) {
+				minRefCount = frame.getPageId().getAccessCount();
+				frameToReplace = frame;
+			}
+		}
 
-	    if (frameToReplace != null) {
-	        if (frameToReplace.getDirty()) {
-	            DiskManager.getInstance().WritePage(frameToReplace.getPageId(), frameToReplace.getBuffer());
-	        }
+		System.out.println("Frame to Replace: " + (frameToReplace != null ? frameToReplace.toString() : "None"));
+		printBufferPoolStatus("Before LFU Replacement");
 
-	        DiskManager diskManager = DiskManager.getInstance();
-	        PageId newPageId = pageId; 
-	        ByteBuffer newBuffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
-	        diskManager.ReadPage(newPageId, newBuffer);
+		// If all frames are pinned, handle this situation appropriately
+		if (frameToReplace == null) {
+			return new Frame();
+		}
 
-	        frameToReplace.replacePage(newPageId);
-	        frameToReplace.setBuffer(newBuffer);
-	        frameToReplace.setDirty(); 
-	    }
+		if (frameToReplace.getDirty()) {
+			DiskManager.getInstance().WritePage(frameToReplace.getPageId(), frameToReplace.getBuffer());
+		}
 
-	    return frameToReplace;
+		DiskManager diskManager = DiskManager.getInstance();
+		PageId newPageId = pageId;
+		ByteBuffer newBuffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
+		diskManager.ReadPage(newPageId, newBuffer);
+
+		frameToReplace.replacePage(newPageId);
+		frameToReplace.setBuffer(newBuffer);
+		frameToReplace.setDirty();
+
+		printBufferPoolStatus("After LFU Replacement");
+
+		return frameToReplace;
 	}
-	
+
 	public void freePage(PageId pageId, boolean valDirty) throws IOException {
-	    Frame frame = FindFrame(pageId);
+		Frame frame = FindFrame(pageId);
 
-	    if (frame == null) {
-	        throw new IllegalArgumentException("Error");
-	    }
-	    frame.decrementPinCount();
-	    if (valDirty)
-	        frame.setDirty();
+		if (frame == null) {
+			throw new IllegalArgumentException("Error");
+		}
+		frame.decrementPinCount();
+		if (valDirty)
+			frame.setDirty();
 	}
-
 
 	public void FlushAll() throws IOException {
 		for (Frame fr : bufferPool) {
 			if (fr.getDirty()) {
 				PageId pageId = fr.getPageId();
 				ByteBuffer buffer = fr.getBuffer();
-				DiskManager.getInstance().WritePage(pageId, buffer); // l’écriture de toutes les pages dont le flag dirty = 1 (true) sur disque
+				DiskManager.getInstance().WritePage(pageId, buffer);
 			}
-			fr.reset(); // la remise à 0 de tous les flags/informations et contenus des buffers (buffer pool « vide »)
+			fr.reset();
 		}
 	}
 
+	public void printBufferPoolStatus(String status) {
+		System.out.println("Buffer Pool Status " + status + ":");
+		for (int i = 0; i < bufferPool.length; i++) {
+			System.out.println("Frame " + i + ": " + bufferPool[i]);
+		}
+		System.out.println();
+	}
+
+	public void setBufferPool(Frame[] bufferPool) {
+		this.bufferPool = bufferPool;
+	}
 }

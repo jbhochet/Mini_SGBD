@@ -16,29 +16,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Stack;
 
-public class DiskManagerTest {
-    private static File tmpDir;
-    private static DiskManager diskManager;
-
-    @BeforeAll
-    public static void setup() throws IOException {
-        tmpDir = Files.createTempDirectory("DB_").toFile();
-        DBParams.DBPath = tmpDir.getAbsolutePath();
-        DBParams.DMFileCount = 4;
-        DBParams.SGBDPageSize = 4096;
-        try {
-            diskManager = DiskManager.getInstance();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-    }
-
-    @AfterAll
-    public static void exit() throws IOException {
-        for (File file : tmpDir.listFiles())
-            file.delete();
-        tmpDir.delete();
-    }
+public class DiskManagerTest extends BaseDiskTest {
 
     /*********
      * Tests *
