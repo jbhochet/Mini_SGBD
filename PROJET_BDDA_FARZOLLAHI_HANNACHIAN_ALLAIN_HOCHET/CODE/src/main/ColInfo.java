@@ -25,4 +25,8 @@ class ColInfo {
     public void setColType(String colType) {
         this.colType = colType;
     }
+
+    public boolean isValidColumnType(String type) {
+        return type.equals("INT") || type.equals("FLOAT") || type.matches("STRING\\(\\d+\\)") || type.matches("VARSTRING\\(\\d+\\)");
+    }
 }

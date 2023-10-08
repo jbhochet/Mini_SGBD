@@ -6,10 +6,14 @@ public class TableInfo {
     private int numberOfColumns;
     private List<ColInfo> columns;
 
-    public TableInfo(String tableName, List<ColInfo> columns) {
+    public TableInfo(String tableName, List<ColInfo> columns) throws Exception {
         this.tableName = tableName;
         this.numberOfColumns = columns.size();
         this.columns = columns;
+        for (ColInfo colInfo : columns) {
+            if (!colInfo.isValidColumnType(colInfo.getColType()))
+                throw new Exception("Type de colonne invalide : " + colInfo.getColType());
+        }
     }
 
     public String getTableName() {
