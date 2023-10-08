@@ -27,32 +27,33 @@ public class Record {
 
     public void setRecValues(List<String> recValues) {
         this.recValues = recValues;
+    }
 
-        public int writeToBuffer(ByteBuffer buffer, int pos) {
-        int originalPos = buffer.position();
-        buffer.position(pos);
+    public int writeToBuffer(ByteBuffer buffer, int pos) {
+    int originalPos = buffer.position();
+    buffer.position(pos);
 
-        for (int i = 0; i < recValues.size(); i++) {
-            String value = recValues.get(i);
-            String colType = tabInfo.getColumns().get(i).getColType();
+    for (int i = 0; i < recValues.size(); i++) {
+        String value = recValues.get(i);
+        String colType = tabInfo.getColumns().get(i).getColType();
 
-            switch (colType) {
-                case "INT":
-                    int intValue = Integer.parseInt(value);
-                    buffer.putInt(intValue);
-                    break;
-                case "FLOAT":
-                    float floatValue = Float.parseFloat(value);
-                    buffer.putFloat(floatValue);
-                    break;
-                case "STRING":
-                case "VARSTRING":
-                    buffer.put(value.getBytes(StandardCharsets.UTF_8));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Type de colonne non pris en charge : " + colType);
-            }
+        switch (colType) {
+            case "INT":
+                int intValue = Integer.parseInt(value);
+                buffer.putInt(intValue);
+                break;
+            case "FLOAT":
+                float floatValue = Float.parseFloat(value);
+                buffer.putFloat(floatValue);
+                break;
+            case "STRING":
+            case "VARSTRING":
+                buffer.put(value.getBytes(StandardCharsets.UTF_8));
+                break;
+            default:
+                throw new IllegalArgumentException("Type de colonne non pris en charge : " + colType);
         }
+    }
 
         buffer.position(originalPos);
         return buffer.position() - pos;
@@ -91,10 +92,10 @@ public class Record {
     }
         
 
-    }
+}
 
-    // Méthode pour lire les valeurs du Record depuis le buffer
+/*   // Méthode pour lire les valeurs du Record depuis le buffer
     public void readFromBuffer(ByteBuffer buff, int pos) {
         
     }
-}
+}*/
