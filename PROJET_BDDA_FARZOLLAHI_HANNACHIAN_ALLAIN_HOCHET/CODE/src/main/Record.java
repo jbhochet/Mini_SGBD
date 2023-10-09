@@ -95,8 +95,3 @@ public class Record {
 
 }
 
-/*   // Méthode pour lire les valeurs du Record depuis le buffer
-    public void readFromBuffer(ByteBuffer buff, int pos) {
-        
-    }
-}*/
