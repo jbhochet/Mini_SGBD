@@ -10,17 +10,13 @@ public class Frame {
 
     public Frame() {
         this.buffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
-        this.pageId = new PageId(0, 0);
+        this.pageId = null;
         this.pinCount = 0;
         this.dirty = false;
     }
 
     public ByteBuffer getBuffer() {
         return buffer;
-    }
-
-    public void setBuffer(ByteBuffer buffer) {
-        this.buffer = buffer;
     }
 
     public PageId getPageId() {
@@ -39,7 +35,7 @@ public class Frame {
         pinCount--;
     }
 
-    public boolean getDirty() {
+    public boolean isDirty() {
         return dirty;
     }
 
@@ -48,10 +44,12 @@ public class Frame {
     }
 
     public void replacePage(PageId p) {
+        reset();
         pageId = p;
     }
 
     public void reset() {
+        buffer.clear();
         pageId = null;
         pinCount = 0;
         dirty = false;

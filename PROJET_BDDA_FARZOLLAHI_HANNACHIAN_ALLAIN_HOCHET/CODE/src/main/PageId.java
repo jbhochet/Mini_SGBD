@@ -1,14 +1,12 @@
 package main;
 
 public class PageId {
-    private int AccessCount;
     private int FileIdx;
     private int PageIdx;
 
     public PageId(int fileIdx, int pageIdx) {
         this.FileIdx = fileIdx;
         this.PageIdx = pageIdx;
-        this.AccessCount = 0; // Initialize access count to 0
     }
 
     public int getFileIdx() {
@@ -17,14 +15,6 @@ public class PageId {
 
     public int getPageIdx() {
         return PageIdx;
-    }
-
-    public int getAccessCount() {
-        return AccessCount;
-    }
-
-    public void incrementAccessCount() {
-        AccessCount++;
     }
 
     @Override
@@ -42,6 +32,6 @@ public class PageId {
 
     @Override
     public String toString() {
-        return "PageId(FileIdx=" + FileIdx + ", PageIdx=" + PageIdx + ", AccessCount=" + AccessCount + ")";
+        return String.format("PageId(FileIdx=%d, PageIdx=%d)", this.FileIdx, this.PageIdx);
     }
 }

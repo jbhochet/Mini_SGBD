@@ -2,92 +2,111 @@ package main;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BufferManager {
 	private static BufferManager instance = null;
 	private Frame[] bufferPool;
+	private Map<String, Integer> accessByPages;
 
 	public BufferManager() {
 		bufferPool = new Frame[DBParams.FrameCount];
 		for (int i = 0; i < DBParams.FrameCount; i++)
 			bufferPool[i] = new Frame();
+		accessByPages = new HashMap<>();
 	}
 
+	// Get the singleton instance of BufferManager
 	public static BufferManager getInstance() {
 		if (instance == null)
 			instance = new BufferManager();
 		return instance;
 	}
 
-	public Frame FindFrame(PageId pageIdx) {
+	// Increment the access count of this pageId
+	private void accessPage(PageId pageId) {
+		int accessCount = accessByPages.getOrDefault(pageId.toString(), 0);
+		accessCount++;
+		accessByPages.put(pageId.toString(), accessCount);
+	}
+
+	// Return the frame who contains pageIdx
+	private Frame findFrame(PageId pageIdx) {
 		for (Frame frame : bufferPool) {
 			if (frame.getPageId() != null && frame.getPageId().equals(pageIdx)) {
-				System.out.println("Access Count for Page " + pageIdx + ": " + frame.getPageId().getAccessCount());
+				// System.out.println("Access Count for Page " + pageIdx + ": " +
+				// frame.getPageId().getAccessCount());
 				return frame;
 			}
 		}
 		System.out.println("Access Count for Page " + pageIdx + " not found!");
-		return new Frame();
+		return null;
 	}
 
-	public Frame ReplaceLFU(PageId pageId) throws IOException {
-		Frame frameToReplace = null;
-		int minRefCount = Integer.MAX_VALUE;
-
+	// Return the frame we can replace with a new page
+	private Frame replaceLFU() {
+		Frame res = null;
 		for (Frame frame : bufferPool) {
-			if (frame.getPageId() != null && frame.getPageId().getAccessCount() < minRefCount
-					&& frame.getPinCount() == 0) {
-				minRefCount = frame.getPageId().getAccessCount();
-				frameToReplace = frame;
+			if (frame.getPageId() == null) {
+				res = frame;
+				break;
+			}
+			if (frame.getPinCount() == 0) {
+				if (res == null)
+					res = frame;
+				else if (accessByPages.getOrDefault(res.toString(), 0) > accessByPages.getOrDefault(frame.toString(),
+						0))
+					res = frame;
 			}
 		}
-
-		System.out.println("Frame to Replace: " + (frameToReplace != null ? frameToReplace.toString() : "None"));
-		printBufferPoolStatus("Before LFU Replacement");
-
-		// If all frames are pinned, handle this situation appropriately
-		if (frameToReplace == null) {
-			return new Frame();
+		if (res == null) {
+			System.err.println("Out of memory >_< !");
+			System.exit(1);
 		}
-
-		if (frameToReplace.getDirty()) {
-			DiskManager.getInstance().WritePage(frameToReplace.getPageId(), frameToReplace.getBuffer());
-		}
-
-		DiskManager diskManager = DiskManager.getInstance();
-		PageId newPageId = pageId;
-		ByteBuffer newBuffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
-		diskManager.ReadPage(newPageId, newBuffer);
-
-		frameToReplace.replacePage(newPageId);
-		frameToReplace.setBuffer(newBuffer);
-		frameToReplace.setDirty();
-
-		printBufferPoolStatus("After LFU Replacement");
-
-		return frameToReplace;
+		return res;
 	}
 
-	public void freePage(PageId pageId, boolean valDirty) throws IOException {
-		Frame frame = FindFrame(pageId);
+	// Get the current page if it's in frames or load it with lfu. Access is stored
+	// in frame
+	public ByteBuffer getPage(PageId pageId) throws IOException {
+		Frame frame = findFrame(pageId);
+		if (frame != null)
+			return frame.getBuffer();
+		// We must load the page
+		frame = replaceLFU();
+		flush(frame);
+		frame.replacePage(pageId);
+		DiskManager.getInstance().ReadPage(pageId, frame.getBuffer());
+		frame.incrementPinCount();
+		accessPage(pageId);
+		return frame.getBuffer();
+	}
 
+	// Release access on the page
+	public void freePage(PageId pageId, boolean valDirty) throws IOException {
+		Frame frame = findFrame(pageId);
 		if (frame == null) {
-			throw new IllegalArgumentException("Error");
+			throw new IllegalArgumentException("This page is not in a frame!");
 		}
 		frame.decrementPinCount();
+		accessPage(pageId);
 		if (valDirty)
 			frame.setDirty();
 	}
 
-	public void FlushAll() throws IOException {
-		for (Frame fr : bufferPool) {
-			if (fr.getDirty()) {
-				PageId pageId = fr.getPageId();
-				ByteBuffer buffer = fr.getBuffer();
-				DiskManager.getInstance().WritePage(pageId, buffer);
-			}
-			fr.reset();
+	// Write a frame on the disk
+	private void flush(Frame frame) throws IOException {
+		if (frame.isDirty()) {
+			DiskManager.getInstance().WritePage(frame.getPageId(), frame.getBuffer());
 		}
+		frame.reset();
+	}
+
+	// Write all frames buffers on the disk if needed and reset all flags
+	public void flushAll() throws IOException {
+		for (Frame frame : bufferPool)
+			flush(frame);
 	}
 
 	public void printBufferPoolStatus(String status) {
@@ -96,9 +115,5 @@ public class BufferManager {
 			System.out.println("Frame " + i + ": " + bufferPool[i]);
 		}
 		System.out.println();
-	}
-
-	public void setBufferPool(Frame[] bufferPool) {
-		this.bufferPool = bufferPool;
 	}
 }
