@@ -1,19 +1,14 @@
 package test;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import main.PageId;
 import main.DBParams;
-import main.DiskManager;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.util.Stack;
 
 public class DiskManagerTest extends BaseDiskTest {

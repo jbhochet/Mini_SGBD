@@ -1,7 +1,6 @@
 package test;
 
 import java.io.File;
-import java.io.IOError;
 import java.io.IOException;
 import java.nio.file.Files;
 
