@@ -29,42 +29,54 @@ public class Record {
     public void setRecValues(List<String> recValues) {
         this.recValues = recValues;
     }
+public int writeToBuffer(ByteBuffer buffer, int pos) {
+        int originalPos = buffer.position();
+        buffer.position(pos);
 
-    public int writeToBuffer(ByteBuffer buffer, int pos) {
-    int originalPos = buffer.position();
-    buffer.position(pos);
+        for (int i = 0; i < recValues.size(); i++) {
+            String value = recValues.get(i);
+            String colType = tabInfo.getColumns().get(i).getColType();
 
-    for (int i = 0; i < recValues.size(); i++) {
-        String value = recValues.get(i);
-        String colType = tabInfo.getColumns().get(i).getColType();
-
-        switch (colType) {
-            case "INT":
-                int intValue = Integer.parseInt(value);
-                buffer.putInt(intValue);
-                break;
-            case "FLOAT":
-                float floatValue = Float.parseFloat(value);
-                buffer.putFloat(floatValue);
-                break;
-            case "STRING":
-            case "VARSTRING":
-                buffer.put(value.getBytes(StandardCharsets.UTF_8));
-                break;
-            default:
-                throw new IllegalArgumentException("Type de colonne non pris en charge : " + colType);
+            switch (colType) {
+                case "INT":
+                    int intValue = Integer.parseInt(value);
+                    buffer.putInt(intValue);
+                    break;
+                case "FLOAT":
+                    float floatValue = Float.parseFloat(value);
+                    buffer.putFloat(floatValue);
+                    break;
+                case "STRING":
+                    writeFixedString(buffer, value, tabInfo.getColumns().get(i).getT());
+                    break;
+                case "VARSTRING":
+                    writeVariableString(buffer, value);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported column type: " + colType);
+            }
         }
-    }
 
         buffer.position(originalPos);
         return buffer.position() - pos;
     }
-    
-    public void readFromBuffer(ByteBuffer buffer, int pos) {
+
+    private void writeFixedString(ByteBuffer buffer, String value, int maxLength) {
+        byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
+        buffer.put(Arrays.copyOf(stringBytes, maxLength)); 
+    }
+
+    private void writeVariableString(ByteBuffer buffer, String value) {
+        byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
+        buffer.putInt(stringBytes.length);
+        buffer.put(stringBytes);
+    }
+
+    public int readFromBuffer(ByteBuffer buffer, int pos) {
         int originalPos = buffer.position();
         buffer.position(pos);
 
-        recValues.clear(); // Vide la liste avant de la remplir avec les nouvelles valeurs
+        recValues.clear();
 
         for (int i = 0; i < tabInfo.getNumberOfColumns(); i++) {
             String colType = tabInfo.getColumns().get(i).getColType();
@@ -79,18 +91,33 @@ public class Record {
                     recValues.add(String.valueOf(floatValue));
                     break;
                 case "STRING":
+                    recValues.add(readFixedString(buffer, tabInfo.getColumns().get(i).getT()));
+                    break;
                 case "VARSTRING":
-                    byte[] stringBytes = new byte[buffer.getInt()];
-                    buffer.get(stringBytes);
-                    recValues.add(new String(stringBytes, StandardCharsets.UTF_8));
+                    recValues.add(readVariableString(buffer));
                     break;
                 default:
-                    throw new IllegalArgumentException("Type de colonne non pris en charge : " + colType);
+                    throw new IllegalArgumentException("Unsupported column type: " + colType);
             }
         }
 
         buffer.position(originalPos);
+        return buffer.position() - pos;
     }
+
+    private String readFixedString(ByteBuffer buffer, int maxLength) {
+        byte[] stringBytes = new byte[maxLength];
+        buffer.get(stringBytes);
+        return new String(stringBytes, StandardCharsets.UTF_8).trim();
+    }
+
+    private String readVariableString(ByteBuffer buffer) {
+        int stringLength = buffer.getInt();
+        byte[] stringBytes = new byte[stringLength];
+        buffer.get(stringBytes);
+        return new String(stringBytes, StandardCharsets.UTF_8);
+    }
+
         
 
 }
