@@ -12,7 +12,7 @@ public class Main {
         DBParams.DMFileCount = 4;
         DBParams.SGBDPageSize = 4096;
         DBParams.FrameCount = 2;
-        
+
         try {
             diskManager = DiskManager.getInstance();
         } catch (IOException e) {
@@ -56,5 +56,16 @@ public class Main {
         int allocatedPagesCount = diskManager.GetCurrentCountAllocPages();
         System.out.println("Current Count of Allocated Pages: " + allocatedPagesCount);
 
+        // DB Info
+        DatabaseInfo dbinfo = DatabaseInfo.getInstance();
+
+        try {
+            dbinfo.init();
+
+            
+
+            dbinfo.finish();
+        } catch (IOException | ClassNotFoundException e) {
+        }
     }
 }
