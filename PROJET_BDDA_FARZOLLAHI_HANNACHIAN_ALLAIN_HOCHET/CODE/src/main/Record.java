@@ -3,6 +3,7 @@ package main;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Record {
@@ -63,7 +64,7 @@ public int writeToBuffer(ByteBuffer buffer, int pos) {
 
     private void writeFixedString(ByteBuffer buffer, String value, int maxLength) {
         byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
-        buffer.put(Arrays.copyOf(stringBytes, maxLength)); 
+        buffer.put(Arrays.copyOf(stringBytes, maxLength));
     }
 
     private void writeVariableString(ByteBuffer buffer, String value) {
