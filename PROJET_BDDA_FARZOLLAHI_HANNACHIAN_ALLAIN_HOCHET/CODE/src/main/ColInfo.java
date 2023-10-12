@@ -1,6 +1,6 @@
 package main;
 
-class ColInfo {
+public class ColInfo {
     private String colName;
     private String colType;
     private int T;

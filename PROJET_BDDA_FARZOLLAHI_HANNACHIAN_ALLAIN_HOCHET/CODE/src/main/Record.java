@@ -27,10 +27,14 @@ public class Record {
         return recValues;
     }
 
+    public void addRecordValue(String s) {
+        recValues.add(s);
+    }
+
     public void setRecValues(List<String> recValues) {
         this.recValues = recValues;
     }
-public int writeToBuffer(ByteBuffer buffer, int pos) {
+    public int writeToBuffer(ByteBuffer buffer, int pos) {
         int originalPos = buffer.position();
         buffer.position(pos);
 
@@ -118,8 +122,6 @@ public int writeToBuffer(ByteBuffer buffer, int pos) {
         buffer.get(stringBytes);
         return new String(stringBytes, StandardCharsets.UTF_8);
     }
-
-        
 
 }
 
