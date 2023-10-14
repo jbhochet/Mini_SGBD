@@ -5,11 +5,13 @@ public class TableInfo {
     private String tableName;
     private int numberOfColumns;
     private List<ColInfo> columns;
+    private PageId headerPageId;
 
-    public TableInfo(String tableName, List<ColInfo> columns) throws Exception {
+    public TableInfo(String tableName, List<ColInfo> columns,PageId headerPageId) throws Exception {
         this.tableName = tableName;
         this.numberOfColumns = columns.size();
         this.columns = columns;
+        this.headerPageId=headerPageId;
         for (ColInfo colInfo : columns) {
             if (!colInfo.isValidColumnType(colInfo.getColType()))
                 throw new Exception("Type de colonne invalide : " + colInfo.getColType());
