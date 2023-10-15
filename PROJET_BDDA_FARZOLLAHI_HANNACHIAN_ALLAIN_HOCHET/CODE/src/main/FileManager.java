@@ -47,10 +47,32 @@ public class FileManager {
         // PAS COMPLET
     }
 
-    public PageId getFreeDataPageId(TableInfo tabinfo,int sizeRecord) {
+    public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
+        List<PageId> dataPages = getDataPages(tabInfo);
+
+        for (PageId dataPageId : dataPages) {
+            ByteBuffer dataPageBuffer = BufferManager.getInstance().getPage(dataPageId);
+            int remainingSpace = DBParams.SGBDPageSize - dataPageBuffer.position();
+
+            if (remainingSpace >= sizeRecord) {
+                BufferManager.getInstance().releasePage(dataPageId, false);
+                return dataPageId;
+            }
+
+            BufferManager.getInstance().releasePage(dataPageId, false);
+        }
+
+        return null;
     }
 
-    public RecordId writeRecordToDataPage(Record record,PageId pageId) {
+    public RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
+        ByteBuffer dataPageBuffer = BufferManager.getInstance().getPage(pageId);
+        int startPosition = dataPageBuffer.position();
+        int bytesWritten = record.writeToBuffer(dataPageBuffer, startPosition);
+        BufferManager.getInstance().markPageDirty(pageId);
+        BufferManager.getInstance().releasePage(pageId, true);
+
+        return new RecordId(pageId, startPosition / bytesWritten);
     }
 
     public List<Record> getRecordsInDataPage(TableInfo tabInfo, PageId pageId) throws IOException {
@@ -82,7 +104,35 @@ public class FileManager {
         return dataPageIds;
     }
 
-    public RecordId InsertRecordIntoTable(Record record) {
+    public RecordId InsertRecordIntoTable(Record record) throws IOException {
+        // Step 1: Get the TableInfo for the table associated with the record
+        TableInfo tabInfo = record.getTabInfo();
+
+        // Step 2: Find a page with enough space for the new record
+        PageId dataPageId = getFreeDataPageId(tabInfo, record.getSize());
+
+        if (dataPageId == null) {
+            // Handle the case where there is no page with enough space
+            // You might need to create a new data page
+            dataPageId = addDataPage(tabInfo);
+        }
+
+        // Step 3: Write the record to the identified data page
+        RecordId rid = writeRecordToDataPage(record, dataPageId);
+
+        // Step 4: Update any necessary metadata, e.g., in the header page
+        ByteBuffer headerPageBuffer = BufferManager.getInstance().getPage(tabInfo.getHeaderPageId());
+        int dataPageCount = headerPageBuffer.getInt();
+        headerPageBuffer.putInt(dataPageCount + 1); // Increment the data page count
+
+        // Append the new data page information to the header page
+        headerPageBuffer.putInt(dataPageId.getFileIdx());
+        headerPageBuffer.putInt(dataPageId.getPageIdx());
+
+        BufferManager.getInstance().markPageDirty(tabInfo.getHeaderPageId());
+
+        // Step 5: Return the RecordId of the inserted record
+        return rid;
     }
 
     public List<Record> GetAllRecords(TableInfo tabInfo) throws IOException {

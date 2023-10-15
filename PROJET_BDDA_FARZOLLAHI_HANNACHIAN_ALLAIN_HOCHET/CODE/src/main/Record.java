@@ -123,5 +123,34 @@ public class Record {
         return new String(stringBytes, StandardCharsets.UTF_8);
     }
 
+    public int getSize() {
+        int size = 0;
+
+        for (int i = 0; i < recValues.size(); i++) {
+            String value = recValues.get(i);
+            String colType = tabInfo.getColumns().get(i).getColType();
+
+            switch (colType) {
+                case "INT":
+                    size += Integer.BYTES;
+                    break;
+                case "FLOAT":
+                    size += Float.BYTES;
+                    break;
+                case "STRING":
+                    size += tabInfo.getColumns().get(i).getT();
+                    break;
+                case "VARSTRING":
+                    size += Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported column type: " + colType);
+            }
+        }
+
+        return size;
+    }
+
+
 }
 
