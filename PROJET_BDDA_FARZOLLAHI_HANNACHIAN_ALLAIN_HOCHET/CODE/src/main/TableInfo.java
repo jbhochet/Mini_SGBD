@@ -6,14 +6,12 @@ public class TableInfo {
     private int numberOfColumns;
     private List<ColInfo> columns;
     private PageId headerPageId;
-    private PageId firstDataPageId;
 
-    public TableInfo(String tableName, List<ColInfo> columns,PageId headerPageId) throws Exception {
+    public TableInfo(String tableName, List<ColInfo> columns, PageId headerPageId) throws Exception {
         this.tableName = tableName;
         this.numberOfColumns = columns.size();
         this.columns = columns;
         this.headerPageId = headerPageId;
-        this.firstDataPageId = null; // Initialisez à null pour une valeur invalide
         for (ColInfo colInfo : columns) {
             if (!colInfo.isValidColumnType(colInfo.getColType()))
                 throw new Exception("Type de colonne invalide : " + colInfo.getColType());
@@ -48,11 +46,4 @@ public class TableInfo {
         return headerPageId;
     }
 
-    public PageId getFirstDataPageId() {
-        return firstDataPageId;
-    }
-
-    public void setFirstDataPageId(PageId firstDataPageId) {
-        this.firstDataPageId = firstDataPageId;
-    }
 }

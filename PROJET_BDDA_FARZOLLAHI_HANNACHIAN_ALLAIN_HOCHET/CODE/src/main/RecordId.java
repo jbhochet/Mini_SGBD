@@ -13,16 +13,20 @@ public class RecordId {
         return pageId;
     }
 
+    /*
     public void setPageId(PageId pageId) {
         this.pageId = pageId;
     }
+    */
 
     public int getSlotIdx() {
         return slotIdx;
     }
 
+    /*
     public void setSlotIdx(int slotIdx) {
         this.slotIdx = slotIdx;
     }
+    */
 }
 

@@ -3,7 +3,7 @@ package main;
 public class ColInfo {
     private String colName;
     private String colType;
-    private int T;
+    private int t;
 
     public ColInfo(String colName, String colType) {
         this.colName = colName;
@@ -12,7 +12,7 @@ public class ColInfo {
 
     public ColInfo(String colName, String colType, int T) {
         this(colName, colType);
-        this.T = T;
+        this.t = T;
     }
 
     public String getColName() {
@@ -36,10 +36,10 @@ public class ColInfo {
     }
 
     public int getT() {
-        return T;
+        return t;
     }
 
     public void setT(int t) {
-        T = t;
+        this.t = t;
     }
 }

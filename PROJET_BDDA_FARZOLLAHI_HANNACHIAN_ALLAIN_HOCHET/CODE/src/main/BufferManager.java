@@ -44,13 +44,6 @@ public class BufferManager {
 		return null;
 	}
 
-	public void markPageDirty(PageId pageIdx) {
-		Frame frame = findFrame(pageIdx);
-		if (frame != null) {
-			frame.setDirty();
-		}
-	}
-
 	public void releasePage(PageId pageIdx, boolean isDirty) {
 		Frame frame = findFrame(pageIdx);
 		if (frame != null) {
