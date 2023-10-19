@@ -54,7 +54,7 @@ public class FileManager {
             if(currentPage.getFileIdx() == -1) {
                 foundLast = true;
                 buffer.putInt(0, dataPage.getFileIdx());
-                buffer.putInt(2, dataPage.getPageIdx());
+                buffer.putInt(1, dataPage.getPageIdx());
                 bufferManager.freePage(tempPage, true);
             } else {
                 bufferManager.freePage(tempPage, false);
@@ -66,36 +66,36 @@ public class FileManager {
         return dataPage;
     }
 
+    private int getFreeSpace(ByteBuffer pageBuffer) {
+        pageBuffer.position(DBParams.SGBDPageSize-(2*4*1024));
+        int m = pageBuffer.getInt();
+        int posFreeSpace = pageBuffer.getInt();
+        return DBParams.SGBDPageSize - posFreeSpace - (8*1024)*(m+1);
+    }
+
     public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         PageId res = null;
         PageId currentPage = tabInfo.getHeaderPageId();
         PageId tempPage;
+        boolean isFirst = true;
+        int freeSize = 0;
         boolean foundLast = false;
         do {
             ByteBuffer buffer = bufferManager.getPage(currentPage);
             tempPage = currentPage;
             currentPage = new PageId(buffer.getInt(), buffer.getInt());
+            if(!isFirst) {
+                freeSize = getFreeSpace(buffer);
+                if(freeSize >= sizeRecord)
+                    res = tempPage;
+            }
             if(currentPage.getFileIdx() == -1) {
                 foundLast = true;
             }
             bufferManager.freePage(tempPage, false);
-        } while(!foundLast);
-
-        /*List<PageId> dataPages = getDataPages(tabInfo);
-
-        for (PageId dataPageId : dataPages) {
-            ByteBuffer dataPageBuffer = bufferManager.getPage(dataPageId);
-            int remainingSpace = DBParams.SGBDPageSize - dataPageBuffer.position();
-
-            if (remainingSpace >= sizeRecord) {
-                bufferManager.freePage(dataPageId, false);
-                return dataPageId;
-            }
-
-            bufferManager.freePage(dataPageId, false);
-        }*/
-
+        } while(!foundLast && res == null);
+        
         return res;
     }
 
