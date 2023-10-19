@@ -44,15 +44,6 @@ public class BufferManager {
 		return null;
 	}
 
-	public void releasePage(PageId pageIdx, boolean isDirty) {
-		Frame frame = findFrame(pageIdx);
-		if (frame != null) {
-			frame.decrementPinCount();
-			if (isDirty)
-				frame.setDirty();
-		}
-	}
-
 	// Return the frame we can replace with a new page
 	private Frame replaceLFU() {
 		Frame res = null;

@@ -49,7 +49,7 @@ public class RecordIterator {
     }
 
     public void Close() {
-        BufferManager.getInstance().releasePage(pageIdx, false);
+        //BufferManager.getInstance().releasePage(pageIdx, false);
     }
 
     public void Reset() {

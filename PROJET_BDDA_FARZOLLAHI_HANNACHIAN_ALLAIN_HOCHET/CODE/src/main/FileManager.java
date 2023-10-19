@@ -67,34 +67,51 @@ public class FileManager {
     }
 
     public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
-        List<PageId> dataPages = getDataPages(tabInfo);
+        BufferManager bufferManager = BufferManager.getInstance();
+        PageId res = null;
+        PageId currentPage = tabInfo.getHeaderPageId();
+        PageId tempPage;
+        boolean foundLast = false;
+        do {
+            ByteBuffer buffer = bufferManager.getPage(currentPage);
+            tempPage = currentPage;
+            currentPage = new PageId(buffer.getInt(), buffer.getInt());
+            if(currentPage.getFileIdx() == -1) {
+                foundLast = true;
+            }
+            bufferManager.freePage(tempPage, false);
+        } while(!foundLast);
+
+        /*List<PageId> dataPages = getDataPages(tabInfo);
 
         for (PageId dataPageId : dataPages) {
-            ByteBuffer dataPageBuffer = BufferManager.getInstance().getPage(dataPageId);
+            ByteBuffer dataPageBuffer = bufferManager.getPage(dataPageId);
             int remainingSpace = DBParams.SGBDPageSize - dataPageBuffer.position();
 
             if (remainingSpace >= sizeRecord) {
-                BufferManager.getInstance().releasePage(dataPageId, false);
+                bufferManager.freePage(dataPageId, false);
                 return dataPageId;
             }
 
-            BufferManager.getInstance().releasePage(dataPageId, false);
-        }
+            bufferManager.freePage(dataPageId, false);
+        }*/
 
-        return null;
+        return res;
     }
 
     public RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
-        ByteBuffer dataPageBuffer = BufferManager.getInstance().getPage(pageId);
+        BufferManager bufferManager = BufferManager.getInstance();
+        ByteBuffer dataPageBuffer = bufferManager.getPage(pageId);
         int startPosition = dataPageBuffer.position();
         int bytesWritten = record.writeToBuffer(dataPageBuffer, startPosition);
-        BufferManager.getInstance().releasePage(pageId, true);
+        bufferManager.freePage(pageId, true);
 
         return new RecordId(pageId, startPosition / bytesWritten);
     }
 
     public List<Record> getRecordsInDataPage(TableInfo tabInfo, PageId pageId) throws IOException {
-        ByteBuffer dataPageBuffer = BufferManager.getInstance().getPage(pageId);
+        BufferManager bufferManager = BufferManager.getInstance();
+        ByteBuffer dataPageBuffer = bufferManager.getPage(pageId);
         List<Record> records = new ArrayList<>();
         int originalPosition = dataPageBuffer.position();
         while (dataPageBuffer.hasRemaining()) {
@@ -104,13 +121,15 @@ public class FileManager {
             records.add(record);
         }
         dataPageBuffer.position(originalPosition);
-        BufferManager.getInstance().releasePage(pageId, false);
+        bufferManager.freePage(pageId, false);
         return records;
     }
 
+    // TODO: parcours de page
     public List<PageId> getDataPages(TableInfo tabInfo) throws IOException {
+        BufferManager bufferManager = BufferManager.getInstance();
         List<PageId> dataPageIds = new ArrayList<>();
-        ByteBuffer headerPageBuffer = BufferManager.getInstance().getPage(tabInfo.getHeaderPageId());
+        ByteBuffer headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         int dataPageCount = headerPageBuffer.getInt();
         for (int i = 0; i < dataPageCount; i++) {
             int fileIdx = headerPageBuffer.getInt();
@@ -118,7 +137,7 @@ public class FileManager {
             PageId dataPageId = new PageId(fileIdx, pageIdx);
             dataPageIds.add(dataPageId);
         }
-        BufferManager.getInstance().releasePage(tabInfo.getHeaderPageId(), false);
+        bufferManager.freePage(tabInfo.getHeaderPageId(), false);
         return dataPageIds;
     }
 
@@ -154,13 +173,15 @@ public class FileManager {
         return rid;
     }
 
+    // TODO: on doit get puis free
     public List<Record> GetAllRecords(TableInfo tabInfo) throws IOException {
+        //BufferManager bufferManager = BufferManager.getInstance();
         List<Record> records = new ArrayList<>();
         List<PageId> dataPageIds = getDataPages(tabInfo);
         for (PageId dataPageId : dataPageIds) {
             List<Record> recordsInDataPage = getRecordsInDataPage(tabInfo, dataPageId);
             records.addAll(recordsInDataPage);
-            BufferManager.getInstance().releasePage(dataPageId, false);
+            //BufferManager.getInstance().releasePage(dataPageId, false);
         }
         return records;
     }
