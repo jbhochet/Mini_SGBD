@@ -8,13 +8,11 @@ public class RecordIterator {
     private TableInfo tabinfo;
     private ByteBuffer dataPageBuffer;
     private int slotIdx;
-    private Record currentRecord; //POURQUOI ?
 
     public RecordIterator(TableInfo tabinfo, PageId pageIdx) throws IOException {
         this.tabinfo = tabinfo;
         this.pageIdx = pageIdx;
         this.slotIdx = 0;
-        this.currentRecord = null;
         this.dataPageBuffer = BufferManager.getInstance().getPage(pageIdx);
     }
 
@@ -54,7 +52,6 @@ public class RecordIterator {
 
     public void Reset() {
         this.slotIdx = 0;
-        this.currentRecord = null;
     }
 }
 
