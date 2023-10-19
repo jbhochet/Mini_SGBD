@@ -48,8 +48,8 @@ public class RecordIterator {
         return dataPageBuffer.getInt(offset);
     }
 
-    public void Close() {
-        //BufferManager.getInstance().releasePage(pageIdx, false);
+    public void Close() throws IOException {
+        BufferManager.getInstance().freePage(pageIdx, false);
     }
 
     public void Reset() {
@@ -59,7 +59,7 @@ public class RecordIterator {
 }
 
 /*
-public Record GetNextRecord() {
+public Record GetNextRecord(){
     if (dataPageBuffer.remaining() <= 0) {
         return null; // No more records on the page
     }

@@ -173,16 +173,4 @@ public class FileManager {
         return rid;
     }
 
-    // TODO: on doit get puis free
-    public List<Record> GetAllRecords(TableInfo tabInfo) throws IOException {
-        //BufferManager bufferManager = BufferManager.getInstance();
-        List<Record> records = new ArrayList<>();
-        List<PageId> dataPageIds = getDataPages(tabInfo);
-        for (PageId dataPageId : dataPageIds) {
-            List<Record> recordsInDataPage = getRecordsInDataPage(tabInfo, dataPageId);
-            records.addAll(recordsInDataPage);
-            //BufferManager.getInstance().releasePage(dataPageId, false);
-        }
-        return records;
-    }
 }
