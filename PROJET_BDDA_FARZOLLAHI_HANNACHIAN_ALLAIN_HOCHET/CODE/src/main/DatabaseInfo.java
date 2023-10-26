@@ -59,4 +59,10 @@ public class DatabaseInfo {
         return tables.get(tableName);
     }
 
+    public int getTableCounter() {
+        return tableCounter;
+    }
+
+    
+
 }

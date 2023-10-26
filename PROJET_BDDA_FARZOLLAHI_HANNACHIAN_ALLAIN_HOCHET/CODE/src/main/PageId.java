@@ -4,7 +4,6 @@ package main;
 public class PageId {
     private int FileIdx;
     private int PageIdx;
-    private static final int SIZE = 8; // Taille en octets de PageId (2 entiers de 4 octets)
 
     public PageId(int fileIdx, int pageIdx) {
         this.FileIdx = fileIdx;
