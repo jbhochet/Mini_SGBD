@@ -2,6 +2,7 @@ package main;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -67,5 +68,22 @@ public class Main {
             dbinfo.finish();
         } catch (IOException | ClassNotFoundException e) {
         }
+
+        // DatabaseManager
+        DatabaseManager databaseManager =  DatabaseManager.getInstance();
+        databaseManager.init();
+
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+        while (!exit) {
+            System.out.print("Entrez une commande (ou EXIT pour quitter)");
+            String command = scanner.nextLine().trim();
+            if (command.equalsIgnoreCase("EXIT")) {
+                databaseManager.finish();
+                exit = true;
+            } else 
+                databaseManager.ProcessCommand(command);
+        }
+        scanner.close();
     }
 }
