@@ -2,6 +2,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class RecordTest extends BaseBufferTest {
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
         diskManager.ReadPage(pageId, readBuffer);
         readBuffer.flip();
-        assertEquals(1, readBuffer.getInt());
+        Assertions.assertEquals(1, readBuffer.getInt());
     }
 
 }

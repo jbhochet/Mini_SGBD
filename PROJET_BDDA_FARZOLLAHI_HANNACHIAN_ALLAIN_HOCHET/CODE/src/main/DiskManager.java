@@ -56,19 +56,18 @@ public class DiskManager {
         raf.seek(dataFiles[fileId].length());
         raf.write(ByteBuffer.allocate(DBParams.SGBDPageSize).array());
         raf.close();
-        PageId page = new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize-1);
-        return page;
+        return new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize-1);
     }
 
     public void ReadPage(PageId pageId, ByteBuffer buffer) throws IOException {
         if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length)
             throw new IllegalArgumentException("the specified file does not exist!");
         File file = dataFiles[pageId.getFileIdx()];
-        if (pageId.getPageIdx() < 0 || file.length() < pageId.getPageIdx() * DBParams.SGBDPageSize) {
+        if (pageId.getPageIdx() < 0 || file.length() < (long) pageId.getPageIdx() * DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "r");
-        dataFile.seek(pageId.getPageIdx() * DBParams.SGBDPageSize); // modifier la position du pointeur
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // modifier la position du pointeur
         int bytesRead = dataFile.getChannel().read(buffer); // Lire le contenu de la page dans le ByteBuffer
         if (bytesRead != -1) { // En Java, la valeur -1 est retournée pour indiquer la fin du fichier
             buffer.flip(); // Préparer le ByteBuffer pour la lecture
@@ -78,13 +77,13 @@ public class DiskManager {
 
     public void WritePage(PageId pageId, ByteBuffer buffer) throws IOException {
         if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length)
-            throw new IllegalArgumentException("the specified file does not exist!");
+            throw new IllegalArgumentException("The specified file does not exist!");
         File file = dataFiles[pageId.getFileIdx()];
-        if (pageId.getPageIdx() < 0 || file.length() < pageId.getPageIdx() * DBParams.SGBDPageSize) {
+        if (pageId.getPageIdx() < 0 || file.length() < (long) pageId.getPageIdx() * DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
-        dataFile.seek(pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement spécifié
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement spécifié
         dataFile.getChannel().write(buffer); // Écrire le contenu du ByteBuffer dans le fichier
         dataFile.close();
     }

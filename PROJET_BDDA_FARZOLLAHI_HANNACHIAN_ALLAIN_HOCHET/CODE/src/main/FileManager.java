@@ -92,7 +92,7 @@ public class FileManager {
                 foundLast = true;
             }
             bufferManager.freePage(tempPage, false);
-        } while(!foundLast && res == null);
+        } while(!foundLast);
         
         return res;
     }

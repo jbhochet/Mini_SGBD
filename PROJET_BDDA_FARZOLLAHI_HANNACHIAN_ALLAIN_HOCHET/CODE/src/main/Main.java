@@ -6,8 +6,7 @@ public class Main {
     public static void main(String[] args) {
         DiskManager diskManager;
 
-        String dbPath = (args.length > 0) ? args[0] : "../DB";
-        DBParams.DBPath = dbPath;
+        DBParams.DBPath = (args.length > 0) ? args[0] : "../DB";
         DBParams.DMFileCount = 4;
         DBParams.SGBDPageSize = 4096;
         DBParams.FrameCount = 2;
@@ -64,7 +63,7 @@ public class Main {
             
 
             dbinfo.finish();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException ignored) {
         }
 
         // DatabaseManager

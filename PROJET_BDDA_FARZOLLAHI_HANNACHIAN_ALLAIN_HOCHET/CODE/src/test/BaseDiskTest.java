@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +22,7 @@ public class BaseDiskTest {
         // Delete temp DB at shutdown, thanks to https://stackoverflow.com/a/5824066
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
-                for (File file : tmpDir.listFiles())
+                for (File file : Objects.requireNonNull(tmpDir.listFiles()))
                     file.delete();
                 tmpDir.delete();
             }

@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
@@ -20,11 +21,11 @@ public class DiskManagerTest extends BaseDiskTest {
         final Stack<PageId> stack = new Stack<>();
         for (int i = 0; i < MAX; i++) {
             stack.add(diskManager.AllocPage());
-            assertEquals(i + 1, diskManager.GetCurrentCountAllocPages());
+            Assertions.assertEquals(i + 1, diskManager.GetCurrentCountAllocPages());
         }
         for (int i = 0; i < MAX; i++) {
             diskManager.DeallocPage(stack.pop());
-            assertEquals(MAX - i - 1, diskManager.GetCurrentCountAllocPages());
+            Assertions.assertEquals(MAX - i - 1, diskManager.GetCurrentCountAllocPages());
         }
     }
 
@@ -45,7 +46,7 @@ public class DiskManagerTest extends BaseDiskTest {
             diskManager.ReadPage(pageId, readBuffer);
             int data = readBuffer.getInt();
 
-            assertEquals(i, data);
+            Assertions.assertEquals(i, data);
 
             stack.add(pageId);
         }
@@ -67,7 +68,7 @@ public class DiskManagerTest extends BaseDiskTest {
         diskManager.ReadPage(pageId, tamponLuPhrase);
         String phraseLue = new String(tamponLuPhrase.array()).trim();
 
-        assertEquals(phrase, phraseLue);
+        Assertions.assertEquals(phrase, phraseLue);
 
         diskManager.DeallocPage(pageId);
     }
