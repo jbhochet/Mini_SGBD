@@ -1,9 +1,5 @@
-package test;
-
 import java.io.IOException;
 import java.util.Stack;
-import main.PageId;
-import main.DBParams;
 
 import org.junit.jupiter.api.Test;
 

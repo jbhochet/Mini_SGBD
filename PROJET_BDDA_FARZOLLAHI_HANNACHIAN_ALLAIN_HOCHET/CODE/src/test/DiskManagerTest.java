@@ -1,9 +1,5 @@
-package test;
-
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import main.PageId;
-import main.DBParams;
 
 import static org.junit.Assert.assertEquals;
 

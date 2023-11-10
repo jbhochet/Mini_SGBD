@@ -1,5 +1,3 @@
-package main;
-
 public class ColInfo {
     private String colName;
     private String colType;

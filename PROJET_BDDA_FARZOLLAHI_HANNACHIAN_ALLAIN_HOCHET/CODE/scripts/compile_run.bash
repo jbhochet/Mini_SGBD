@@ -8,7 +8,7 @@ JAVA_VERSION=17
 SRC_DIR=src
 BIN_DIR=bin
 LIB_DIR=lib
-MAIN_CLASS=main.Main
+MAIN_CLASS=Main
 SOURCES_FILES=$(find $SRC_DIR -name "*.java")
 
 # Clear bin directory

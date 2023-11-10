@@ -1,5 +1,3 @@
-package main;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
@@ -71,7 +69,7 @@ public class Main {
 
         // DatabaseManager
         DatabaseManager databaseManager =  DatabaseManager.getInstance();
-        databaseManager.init();
+        //databaseManager.init();
 
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
@@ -79,7 +77,7 @@ public class Main {
             System.out.print("Entrez une commande (ou EXIT pour quitter)");
             String command = scanner.nextLine().trim();
             if (command.equalsIgnoreCase("EXIT")) {
-                databaseManager.finish();
+                //databaseManager.finish();
                 exit = true;
             } else 
                 databaseManager.ProcessCommand(command);

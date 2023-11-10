@@ -1,5 +1,3 @@
-package main;
-
 import java.nio.ByteBuffer;
 
 public class Frame {

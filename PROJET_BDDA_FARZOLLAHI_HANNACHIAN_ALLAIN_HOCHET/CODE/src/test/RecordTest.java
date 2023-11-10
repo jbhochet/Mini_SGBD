@@ -1,13 +1,7 @@
-package test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import main.Record;
-import main.TableInfo;
-import main.ColInfo;
-import main.PageId;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

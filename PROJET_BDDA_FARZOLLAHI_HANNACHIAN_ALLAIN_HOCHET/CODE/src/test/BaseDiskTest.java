@@ -1,14 +1,9 @@
-package test;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
-
-import main.DBParams;
-import main.DiskManager;
 
 @Ignore
 public class BaseDiskTest {

@@ -1,12 +1,7 @@
-package test;
-
 import java.io.IOException;
 
 import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
-
-import main.BufferManager;
-import main.DBParams;
 
 @Ignore
 public class BaseBufferTest extends BaseDiskTest {

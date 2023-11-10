@@ -1,4 +1,4 @@
-package main;
+import java.io.IOException;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
