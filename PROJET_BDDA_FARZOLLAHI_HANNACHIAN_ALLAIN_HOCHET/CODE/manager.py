@@ -64,7 +64,7 @@ dbpath = path.realpath(args.dbpath)
 os.chdir(path.dirname(path.realpath(__file__)))
 
 # Clear bin directory
-shutil.rmtree(bin, True)
+shutil.rmtree(BIN_DIR, True)
 
 # Compile source files
 compileJava(path.join(SOURCE_DIR, "main"), BIN_DIR, [], JAVA_VERSION)
