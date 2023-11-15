@@ -12,15 +12,13 @@ public class DiskManager {
     private Stack<PageId> deallocatedPages;
 
     // Constructor to initialize DBPath
-    public DiskManager() throws IOException {
+    public DiskManager() {
         this.dataFiles = new File[DBParams.DMFileCount];
         this.deallocatedPages = new Stack<>();
-        createDataFiles();
-
     }
 
     // Singleton : getInstance method
-    public static DiskManager getInstance() throws IOException {
+    public static DiskManager getInstance() {
         if (instance == null) {
 
             instance = new DiskManager();
@@ -28,7 +26,7 @@ public class DiskManager {
         return instance;
     }
 
-    private void createDataFiles() throws IOException {
+    public void init() throws IOException {
         File tmpFile;
         for (int i = 0; i < DBParams.DMFileCount; i++) {
             tmpFile = new File(Paths.get(DBParams.DBPath, "F" + i + ".data").toString());
@@ -56,7 +54,7 @@ public class DiskManager {
         raf.seek(dataFiles[fileId].length());
         raf.write(ByteBuffer.allocate(DBParams.SGBDPageSize).array());
         raf.close();
-        return new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize-1);
+        return new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize - 1);
     }
 
     public void ReadPage(PageId pageId, ByteBuffer buffer) throws IOException {
@@ -83,7 +81,8 @@ public class DiskManager {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
-        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement spécifié
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement
+                                                                           // spécifié
         dataFile.getChannel().write(buffer); // Écrire le contenu du ByteBuffer dans le fichier
         dataFile.close();
     }
@@ -97,6 +96,17 @@ public class DiskManager {
         for (File file : dataFiles)
             pageCount += (int) file.length() / DBParams.SGBDPageSize;
         return pageCount - deallocatedPages.size();
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("===============").append('\n');
+        sb.append("DiskManager\n");
+        sb.append("File: ").append(dataFiles.length).append('\n');
+        sb.append("Allocated pages: ").append(GetCurrentCountAllocPages()).append('\n');
+        sb.append("Deallocated pages: ").append(deallocatedPages.size()).append('\n');
+        sb.append("===============");
+        return sb.toString();
     }
 
 }

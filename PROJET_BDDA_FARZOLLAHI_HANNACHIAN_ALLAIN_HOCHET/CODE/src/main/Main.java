@@ -11,8 +11,10 @@ public class Main {
         DBParams.SGBDPageSize = 4096;
         DBParams.FrameCount = 2;
 
+        diskManager = DiskManager.getInstance();
+
         try {
-            diskManager = DiskManager.getInstance();
+            diskManager.init();
         } catch (IOException e) {
             System.out.println("Can't initialise database!");
             return;
