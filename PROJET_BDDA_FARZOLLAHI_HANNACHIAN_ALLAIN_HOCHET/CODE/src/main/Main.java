@@ -81,7 +81,7 @@ public class Main {
                 //databaseManager.finish();
                 exit = true;
             } else 
-                databaseManager.ProcessCommand(command);
+                databaseManager.processCommand(command);
         }
         scanner.close();
     }
