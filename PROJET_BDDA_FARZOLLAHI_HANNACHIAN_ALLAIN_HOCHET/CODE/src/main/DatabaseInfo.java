@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class DatabaseInfo {
     public static final String SAVE_FILE = "DBInfo.save";
-    private static final DatabaseInfo instance = new DatabaseInfo();
+    private static DatabaseInfo instance;
     private Map<String, TableInfo> tables;
     private int tableCounter;
 
@@ -21,6 +21,9 @@ public class DatabaseInfo {
     }
 
     public static DatabaseInfo getInstance() {
+        if(instance == null) {
+            instance = new DatabaseInfo();
+        }
         return instance;
     }
 
@@ -29,7 +32,7 @@ public class DatabaseInfo {
         return new File(path);
     }
 
-    public void init() throws IOException, ClassNotFoundException{
+    public void init() throws IOException, ClassNotFoundException {
         File file = getSaveFile();
         if(!file.exists()) return;
         FileInputStream fis = new FileInputStream(file);
