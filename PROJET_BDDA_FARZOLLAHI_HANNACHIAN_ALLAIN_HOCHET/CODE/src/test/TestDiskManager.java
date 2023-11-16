@@ -8,6 +8,11 @@ public class TestDiskManager {
         PageId page;
         ByteBuffer buffer;
 
+
+        /*
+         * Init DB
+         */
+
         DBParams.DMFileCount = 4;
         DBParams.SGBDPageSize = 4;
 
@@ -16,6 +21,7 @@ public class TestDiskManager {
             DBParams.DBPath = Files.createTempDirectory("DB_").toFile().getAbsolutePath();
         } catch(IOException err) {
             System.err.println("Can't create temp folder!");
+            System.err.println(err);
             System.exit(1);
         }
     
@@ -29,6 +35,10 @@ public class TestDiskManager {
             System.err.println(err);
             System.exit(1);
         }
+
+        /*
+         * Test DiskManager methods
+         */
 
         buffer = ByteBuffer.allocate(DBParams.SGBDPageSize);
 

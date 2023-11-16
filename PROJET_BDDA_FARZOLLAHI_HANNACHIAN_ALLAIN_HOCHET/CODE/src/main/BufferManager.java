@@ -51,11 +51,14 @@ public class BufferManager {
 				break;
 			}
 			if (frame.getPinCount() == 0) {
-				if (res == null)
+				if (res == null) {
 					res = frame;
-				else if (accessByPages.getOrDefault(res.toString(), 0) > accessByPages.getOrDefault(frame.toString(),
-						0))
-					res = frame;
+				} else {
+					int resAccessCount = accessByPages.getOrDefault(res.getPageId().toString(), 0);
+					int frameAccessCount = accessByPages.getOrDefault(frame.getPageId().toString(), 0);
+					if (resAccessCount > frameAccessCount)
+						res = frame;
+				}
 			}
 		}
 		if (res == null) {
@@ -69,13 +72,13 @@ public class BufferManager {
 	// in frame
 	public ByteBuffer getPage(PageId pageId) throws IOException {
 		Frame frame = findFrame(pageId);
-		if (frame != null)
-			return frame.getBuffer();
-		// We must load the page
-		frame = replaceLFU();
-		flush(frame);
-		frame.replacePage(pageId);
-		DiskManager.getInstance().ReadPage(pageId, frame.getBuffer());
+		if (frame == null) {
+			// We must load the page
+			frame = replaceLFU();
+			flush(frame);
+			frame.replacePage(pageId);
+			DiskManager.getInstance().ReadPage(pageId, frame.getBuffer());
+		}
 		frame.incrementPinCount();
 		accessPage(pageId);
 		return frame.getBuffer();
@@ -113,5 +116,23 @@ public class BufferManager {
 			System.out.println("Frame " + i + ": " + bufferPool[i]);
 		}
 		System.out.println();
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append("===============\n");
+		sb.append("BufferManager\n");
+		for (Frame frame : bufferPool) {
+			sb.append(frame).append("\n");
+		}
+		sb.append("Access: { ");
+		for (String key : accessByPages.keySet()) {
+			sb.append(key).append(": ").append(accessByPages.get(key)).append(", ");
+		}
+		sb.append("}\n");
+		sb.append("===============");
+
+		return sb.toString();
 	}
 }
