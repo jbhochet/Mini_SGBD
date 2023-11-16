@@ -1,58 +1,48 @@
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Record {
     private TableInfo tabInfo;
-    private List<String> recValues;
+    private String[] recValues;
 
     public Record(TableInfo tabInfo) {
         this.tabInfo = tabInfo;
-        this.recValues = new ArrayList<>();
+        this.recValues = new String[tabInfo.getNumberOfColumns()];
     }
 
     public TableInfo getTabInfo() {
         return tabInfo;
     }
 
-    public void setTabInfo(TableInfo tabInfo) {
-        this.tabInfo = tabInfo;
-    }
-
-    public List<String> getRecValues() {
+    public String[] getRecValues() {
         return recValues;
     }
 
-    public void addRecordValue(String s) {
-        recValues.add(s);
-    }
-
-    public void setRecValues(List<String> recValues) {
+    public void setRecValues(String[] recValues) {
         this.recValues = recValues;
     }
+    
     public int writeToBuffer(ByteBuffer buffer, int pos) {
-        int originalPos = buffer.position();
         buffer.position(pos);
 
-        for (int i = 0; i < recValues.size(); i++) {
-            String value = recValues.get(i);
-            String colType = tabInfo.getColumns().get(i).getColType();
+        for (int i = 0; i < recValues.length; i++) {
+            String value = recValues[i];
+            DataType colType = tabInfo.getColumns()[i].getType();
 
             switch (colType) {
-                case "INT":
+                case INT:
                     int intValue = Integer.parseInt(value);
                     buffer.putInt(intValue);
                     break;
-                case "FLOAT":
+                case FLOAT:
                     float floatValue = Float.parseFloat(value);
                     buffer.putFloat(floatValue);
                     break;
-                case "STRING":
-                    writeFixedString(buffer, value, tabInfo.getColumns().get(i).getT());
+                case STRING:
+                    writeFixedString(buffer, value, tabInfo.getColumns()[i].getT());
                     break;
-                case "VARSTRING":
+                case VARSTRING:
                     writeVariableString(buffer, value);
                     break;
                 default:
@@ -60,7 +50,6 @@ public class Record {
             }
         }
 
-        buffer.position(originalPos);
         return buffer.position() - pos;
     }
 
@@ -76,35 +65,31 @@ public class Record {
     }
 
     public int readFromBuffer(ByteBuffer buffer, int pos) {
-        int originalPos = buffer.position();
         buffer.position(pos);
 
-        recValues.clear();
-
         for (int i = 0; i < tabInfo.getNumberOfColumns(); i++) {
-            String colType = tabInfo.getColumns().get(i).getColType();
+            DataType colType = tabInfo.getColumns()[i].getType();
 
             switch (colType) {
-                case "INT":
+                case INT:
                     int intValue = buffer.getInt();
-                    recValues.add(String.valueOf(intValue));
+                    recValues[i] = String.valueOf(intValue);
                     break;
-                case "FLOAT":
+                case FLOAT:
                     float floatValue = buffer.getFloat();
-                    recValues.add(String.valueOf(floatValue));
+                    recValues[i] = String.valueOf(floatValue);
                     break;
-                case "STRING":
-                    recValues.add(readFixedString(buffer, tabInfo.getColumns().get(i).getT()));
+                case STRING:
+                    recValues[i] = readFixedString(buffer, tabInfo.getColumns()[i].getT());
                     break;
-                case "VARSTRING":
-                    recValues.add(readVariableString(buffer));
+                case VARSTRING:
+                    recValues[i] = readVariableString(buffer);
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported column type: " + colType);
             }
         }
 
-        buffer.position(originalPos);
         return buffer.position() - pos;
     }
 
@@ -124,21 +109,21 @@ public class Record {
     public int getSize() {
         int size = 0;
 
-        for (int i = 0; i < recValues.size(); i++) {
-            String value = recValues.get(i);
-            String colType = tabInfo.getColumns().get(i).getColType();
+        for (int i = 0; i < recValues.length; i++) {
+            String value = recValues[i];
+            DataType colType = tabInfo.getColumns()[i].getType();
 
             switch (colType) {
-                case "INT":
+                case INT:
                     size += Integer.BYTES;
                     break;
-                case "FLOAT":
+                case FLOAT:
                     size += Float.BYTES;
                     break;
-                case "STRING":
-                    size += tabInfo.getColumns().get(i).getT();
+                case STRING:
+                    size += tabInfo.getColumns()[i].getT();
                     break;
-                case "VARSTRING":
+                case VARSTRING:
                     size += Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
                     break;
                 default:
@@ -147,6 +132,17 @@ public class Record {
         }
 
         return size;
+    }
+
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("Record: (");
+        for(String val: recValues) {
+            sb.append(val).append(", ");
+        }
+        sb.append(")\n");
+        return sb.toString();
     }
 
 

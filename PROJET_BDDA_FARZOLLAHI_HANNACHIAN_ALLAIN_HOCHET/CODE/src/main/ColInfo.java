@@ -1,43 +1,27 @@
 public class ColInfo {
-    private String colName;
-    private String colType;
+    private String name;
+    private DataType type;
     private int t;
 
-    public ColInfo(String colName, String colType) {
-        this.colName = colName;
-        this.colType = colType;
+    public ColInfo(String name, DataType type) {
+        this(name, type, 0);
     }
 
-    public ColInfo(String colName, String colType, int T) {
-        this(colName, colType);
-        this.t = T;
+    public ColInfo(String name, DataType type, int t) {
+        this.name = name;
+        this.type = type;
+        this.t = t;
     }
 
-    public String getColName() {
-        return colName;
+    public String getName() {
+        return name;
     }
 
-    public void setColName(String colName) {
-        this.colName = colName;
-    }
-
-    public String getColType() {
-        return colType;
-    }
-
-    public void setColType(String colType) {
-        this.colType = colType;
-    }
-
-    public boolean isValidColumnType(String type) {
-        return type.equals("INT") || type.equals("FLOAT") || type.matches("STRING\\(\\d+\\)") || type.matches("VARSTRING\\(\\d+\\)");
+    public DataType getType() {
+        return type;
     }
 
     public int getT() {
         return t;
-    }
-
-    public void setT(int t) {
-        this.t = t;
     }
 }

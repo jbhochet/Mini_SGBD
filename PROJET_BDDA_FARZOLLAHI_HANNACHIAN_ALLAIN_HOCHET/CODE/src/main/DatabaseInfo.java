@@ -13,11 +13,9 @@ public class DatabaseInfo {
     public static final String SAVE_FILE = "DBInfo.save";
     private static DatabaseInfo instance;
     private Map<String, TableInfo> tables;
-    private int tableCounter;
 
     private DatabaseInfo() {
         this.tables = new HashMap<>();
-        this.tableCounter = 0;
     }
 
     public static DatabaseInfo getInstance() {
@@ -40,7 +38,7 @@ public class DatabaseInfo {
         Collection<?> objects = (Collection<?>) ois.readObject();
         for(Object obj: objects) {
             TableInfo table = (TableInfo) obj;
-            this.tables.put(table.getTableName(), table);
+            this.tables.put(table.getName(), table);
         }
         ois.close();
     }
@@ -53,18 +51,11 @@ public class DatabaseInfo {
     }
 
     public void addTableInfo(TableInfo tableInfo) {
-        tables.put(tableInfo.getTableName(), tableInfo);
-        tableCounter++;
+        tables.put(tableInfo.getName(), tableInfo);
     }
 
     public TableInfo getTableInfo(String tableName) {
         return tables.get(tableName);
     }
-
-    public int getTableCounter() {
-        return tableCounter;
-    }
-
-    
 
 }
