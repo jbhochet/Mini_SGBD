@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class DatabaseInfo {
     }
 
     public static DatabaseInfo getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new DatabaseInfo();
         }
         return instance;
@@ -32,21 +31,27 @@ public class DatabaseInfo {
 
     public void init() throws IOException, ClassNotFoundException {
         File file = getSaveFile();
-        if(!file.exists()) return;
+        if (!file.exists())
+            return;
         FileInputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-        Collection<?> objects = (Collection<?>) ois.readObject();
-        for(Object obj: objects) {
-            TableInfo table = (TableInfo) obj;
-            this.tables.put(table.getName(), table);
+        try (ObjectInputStream ois = new ObjectInputStream(fis)) {
+            Object[] objects = (Object[]) ois.readObject();
+            TableInfo temp;
+            for (Object obj : objects) {
+                if (obj instanceof TableInfo) {
+                    temp = (TableInfo) obj;
+                    tables.put(temp.getName(), temp);
+                } else {
+                    throw new ClassNotFoundException("save file does not contains TableInfo objects!");
+                }
+            }
         }
-        ois.close();
     }
 
     public void finish() throws IOException {
         FileOutputStream fos = new FileOutputStream(getSaveFile());
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(tables.values());
+        oos.writeObject(tables.values().toArray());
         oos.close();
     }
 

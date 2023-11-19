@@ -18,6 +18,10 @@ public class TestDatabaseInfo {
             databaseInfo.init();
 
             databaseInfo.finish();
+
+            databaseInfo.init();
+
+            databaseInfo.finish();
         } catch (IOException | ClassNotFoundException err) {
             err.printStackTrace();
         }
