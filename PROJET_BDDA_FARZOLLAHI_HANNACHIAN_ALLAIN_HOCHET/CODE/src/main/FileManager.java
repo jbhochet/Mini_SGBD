@@ -129,6 +129,7 @@ public class FileManager {
         ByteBuffer headerPageBuffer;
         ByteBuffer pageBuffer;
 
+        // add alls empty page to listDataPage
         headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         int fileIdx = headerPageBuffer.getInt(0);
         int pageIdx = headerPageBuffer.getInt(4);
@@ -145,6 +146,7 @@ public class FileManager {
             bufferManager.freePage(dataPageId, false);
         }
 
+        //adds all filled pages
         headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         fileIdx=headerPageBuffer.getInt(8);
         pageIdx=headerPageBuffer.getInt(12); 
