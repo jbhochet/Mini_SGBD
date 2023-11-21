@@ -1,4 +1,6 @@
-public class TableInfo {
+import java.io.Serializable;
+
+public class TableInfo implements Serializable {
     private String name;
     private ColInfo[] columns;
     private PageId headerPageId;

@@ -1,4 +1,6 @@
-public class PageId {
+import java.io.Serializable;
+
+public class PageId implements Serializable {
     private int FileIdx;
     private int PageIdx;
 

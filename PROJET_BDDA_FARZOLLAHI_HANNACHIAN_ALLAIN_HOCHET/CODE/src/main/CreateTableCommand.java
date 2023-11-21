@@ -1,43 +1,61 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class CreateTableCommand {
+public class CreateTableCommand implements ICommand {
+    public static final Pattern PATTERN = Pattern.compile("CREATE TABLE (\\w+) \\((.+)\\)");
+    public static final Pattern COLUMN_PATTERN = Pattern.compile("^(\\w+):(\\w+)(\\((\\d+)\\))?$");
+
     private String tableName;
-    private int numColumns;
-    private List<String> columnNames;
-    private List<String> columnTypes;
+    // private int numColumns;
+    private ColInfo[] columns;
 
-    public CreateTableCommand(String commandString) {
-        //parseCommand(command);
-    }
-
-    public void parseCommand(String command) {
-        String[] tokens = command.split("\\s+"); // Séparation par espaces
-        this.tableName = tokens[2];
-        // Parsing des colonnes
-        String[] columns = command.split("\\(|\\)")[1].split(",\\s*");
-        this.numColumns = columns.length;
-        this.columnNames = new ArrayList<>();
-        this.columnTypes = new ArrayList<>();
-        for (String col : columns) {
-            String[] colTokens = col.split("\\s+");
-            this.columnNames.add(colTokens[0]);
-            this.columnTypes.add(colTokens[1]);
+    public CreateTableCommand(String command) {
+        Matcher matcher = PATTERN.matcher(command);
+        if (!matcher.matches())
+            throw new IllegalArgumentException();
+        // get the name of the table
+        tableName = matcher.group(1);
+        // now we must parse the column infos!
+        String[] columnInfos = matcher.group(2).split(",");
+        columns = new ColInfo[columnInfos.length];
+        for (int i = 0; i < columns.length; i += 1) {
+            columns[i] = parseColumn(columnInfos[i]);
         }
     }
 
-    public void execute() throws Exception {
-        try {
-            FileManager fileManager = FileManager.getInstance();
-            PageId pageId = fileManager.createNewHeaderPage();
-            /*
-            TableInfo tableInfo = new TableInfo(tableName, columns, pageId);
-            DatabaseInfo.getInstance().addTableInfo(tableInfo);
-             */
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Erreur lors de la création de la table : " + e.getMessage());
+    public ColInfo parseColumn(String column) {
+        Matcher matcher = COLUMN_PATTERN.matcher(column);
+        DataType type;
+        int size = 0;
+        System.out.println(column);
+
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Your command doesn't match the CREATE TABLE syntax!");
+
+        switch (matcher.group(2)) {
+            case "STRING":
+                type = DataType.STRING;
+                size = Integer.parseInt(matcher.group(4));
+                break;
+            case "VARSTRING":
+                type = DataType.VARSTRING;
+                size = Integer.parseInt(matcher.group(4));
+                break;
+            case "INTEGER":
+                type = DataType.INT;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown type!");
         }
+
+        return new ColInfo(matcher.group(1), type, size);
+    }
+
+    public void execute() throws IOException {
+        FileManager fileManager = FileManager.getInstance();
+        PageId headerPage = fileManager.createNewHeaderPage();
+        TableInfo tableInfo = new TableInfo(tableName, columns, headerPage);
+        DatabaseInfo.getInstance().addTableInfo(tableInfo);
     }
 }

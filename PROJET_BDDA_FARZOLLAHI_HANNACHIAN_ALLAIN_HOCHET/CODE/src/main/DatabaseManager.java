@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
@@ -19,22 +18,20 @@ public class DatabaseManager {
         DatabaseInfo.getInstance().finish();
     }
 
-    public void processCommand(String command) {
-        switch (command.toUpperCase()) {
-            case "CREATE_TABLE":
-                //createTable();
-                break;
-            case "INSERT":
-                //insertData();
-                break;
-            case "SELECT":
-                //selectData();
-                break;
-            default:
-                // Commande inconnue, gestion de l'erreur ou traitement par défaut
-                System.out.println("Commande inconnue : " + command);
-                break;
+    public void processCommand(String command) throws IOException {
+        ICommand cmd = null;
+
+        if(command.startsWith("CREATE TABLE")) {
+            cmd = new CreateTableCommand(command);
+        } else if(command.startsWith("INSERT")) {
+
+        } else if(command.startsWith("SELECT")) {
+
+        } else {
+            throw new IllegalArgumentException("Unknown command!");
         }
+
+        cmd.execute();
     }
 
 }
