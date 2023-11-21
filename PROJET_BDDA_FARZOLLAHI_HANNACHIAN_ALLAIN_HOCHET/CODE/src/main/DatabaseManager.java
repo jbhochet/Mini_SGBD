@@ -23,6 +23,8 @@ public class DatabaseManager {
 
         if(command.startsWith("CREATE TABLE")) {
             cmd = new CreateTableCommand(command);
+        } else if(command.startsWith("RESETDB")) {
+            cmd = new ResetDBCommand();
         } else if(command.startsWith("INSERT")) {
 
         } else if(command.startsWith("SELECT")) {

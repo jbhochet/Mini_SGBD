@@ -22,6 +22,12 @@ public class BufferManager {
 		return instance;
 	}
 
+	public void reset() {
+		for (int i = 0; i < bufferPool.length; i++)
+			bufferPool[i] = null;
+		accessByPages.clear();
+	}
+
 	// Increment the access count of this pageId
 	private void accessPage(PageId pageId) {
 		int accessCount = accessByPages.getOrDefault(pageId.toString(), 0);

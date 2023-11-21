@@ -35,6 +35,10 @@ public class DiskManager {
         }
     }
 
+    public void reset() {
+        deallocatedPages.clear();
+    }
+
     private int lightestFileId() {
         int res = 0;
         for (int i = 1; i < dataFiles.length; i++) {

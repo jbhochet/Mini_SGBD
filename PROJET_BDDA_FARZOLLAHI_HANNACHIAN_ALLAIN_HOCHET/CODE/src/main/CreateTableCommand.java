@@ -28,7 +28,6 @@ public class CreateTableCommand implements ICommand {
         Matcher matcher = COLUMN_PATTERN.matcher(column);
         DataType type;
         int size = 0;
-        System.out.println(column);
 
         if (!matcher.matches())
             throw new IllegalArgumentException("Your command doesn't match the CREATE TABLE syntax!");
@@ -42,7 +41,7 @@ public class CreateTableCommand implements ICommand {
                 type = DataType.VARSTRING;
                 size = Integer.parseInt(matcher.group(4));
                 break;
-            case "INTEGER":
+            case "INT":
                 type = DataType.INT;
                 break;
             default:

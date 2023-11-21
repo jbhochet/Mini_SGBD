@@ -55,6 +55,10 @@ public class DatabaseInfo {
         oos.close();
     }
 
+    public void reset() {
+        tables.clear();
+    }
+
     public void addTableInfo(TableInfo tableInfo) {
         tables.put(tableInfo.getName(), tableInfo);
     }
