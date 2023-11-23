@@ -25,8 +25,8 @@ public class DatabaseManager {
             cmd = new CreateTableCommand(command);
         } else if(command.startsWith("RESETDB")) {
             cmd = new ResetDBCommand();
-        } else if(command.startsWith("INSERT")) {
-
+        } else if(command.startsWith("INSERT INTO")) {
+            cmd = new InsertIntoCommand(command);
         } else if(command.startsWith("SELECT")) {
 
         } else {

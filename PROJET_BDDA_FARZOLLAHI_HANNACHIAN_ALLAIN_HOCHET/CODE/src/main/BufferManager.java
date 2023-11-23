@@ -24,7 +24,7 @@ public class BufferManager {
 
 	public void reset() {
 		for (int i = 0; i < bufferPool.length; i++)
-			bufferPool[i] = null;
+			bufferPool[i] = new Frame();
 		accessByPages.clear();
 	}
 
