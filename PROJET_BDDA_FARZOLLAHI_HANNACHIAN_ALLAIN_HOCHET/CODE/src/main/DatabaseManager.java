@@ -21,19 +21,24 @@ public class DatabaseManager {
     public void processCommand(String command) throws IOException {
         ICommand cmd = null;
 
-        if(command.startsWith("CREATE TABLE")) {
+        if (command.startsWith("CREATE TABLE")) {
             cmd = new CreateTableCommand(command);
-        } else if(command.startsWith("RESETDB")) {
+        } else if (command.startsWith("RESETDB")) {
             cmd = new ResetDBCommand();
-        } else if(command.startsWith("INSERT INTO")) {
+        } else if (command.startsWith("INSERT INTO")) {
             cmd = new InsertIntoCommand(command);
-        } else if(command.startsWith("SELECT")) {
+        } else if (command.startsWith("SELECT")) {
 
+        } else if (command.startsWith("IMPORT INTO")) {
+            cmd = new ImportCommand(command);
+        }else if (command.startsWith("SELECTINDEX")) {
+            cmd = new SelectIndexCommand(command);
         } else {
             throw new IllegalArgumentException("Unknown command!");
         }
 
         cmd.execute();
     }
+
 
 }
