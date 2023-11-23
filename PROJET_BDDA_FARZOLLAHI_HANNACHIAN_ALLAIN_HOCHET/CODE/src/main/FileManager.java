@@ -20,10 +20,10 @@ public class FileManager {
         ByteBuffer byteBuffer = bufferManager.getPage(headerPageId);
         // Fake page 1
         byteBuffer.putInt(0, -1);
-        byteBuffer.putInt(1, 0);
-        // Fake page 2
-        byteBuffer.putInt(2, -1);
         byteBuffer.putInt(4, 0);
+        // Fake page 2
+        byteBuffer.putInt(8, -1);
+        byteBuffer.putInt(12, 0);
         // Write data
         bufferManager.freePage(headerPageId, true);
         return headerPageId;
@@ -37,7 +37,7 @@ public class FileManager {
         dataPageBuffer.putInt(0, -1);
         dataPageBuffer.putInt(1, 0);
         // add slot directory
-        int index = DBParams.SGBDPageSize/(4*1024)-4;
+        int index = DBParams.SGBDPageSize-4;
         dataPageBuffer.putInt(index, 8*1024); // free space position
         index-=4;
         dataPageBuffer.putInt(index, 0); // Nb case in directory
@@ -62,7 +62,7 @@ public class FileManager {
         bufferManager.freePage(dataPage, true);
         
         return dataPage;
-    }
+    }//CREATE TABLE R (C1:INT,C2:VARSTRING(3),C3:INT) INSERT INTO R VALUES (1,aab,2)
 
     private int getFreeSpace(ByteBuffer pageBuffer) {
         pageBuffer.position(DBParams.SGBDPageSize-(2*4*1024));
@@ -92,6 +92,7 @@ public class FileManager {
                 foundLast = true;
             }
             bufferManager.freePage(tempPage, false);
+
         } while(!foundLast);
         
         return res;
