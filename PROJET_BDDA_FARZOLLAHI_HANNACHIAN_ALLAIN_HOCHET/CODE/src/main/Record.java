@@ -1,6 +1,9 @@
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Record {
     private TableInfo tabInfo;
@@ -22,7 +25,7 @@ public class Record {
     public void setRecValues(String[] recValues) {
         this.recValues = recValues;
     }
-    
+
     public int writeToBuffer(ByteBuffer buffer, int pos) {
         buffer.position(pos);
 
@@ -135,16 +138,93 @@ public class Record {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("Record: (");
-        for(String val: recValues) {
+        for (String val : recValues) {
             sb.append(val).append(", ");
         }
         sb.append(")\n");
         return sb.toString();
     }
 
+    // New method to get all records
+    public static List<Record> getAllRecords(TableInfo tabInfo) throws IOException {
+        FileManager fileManager = FileManager.getInstance();
+        List<PageId> dataPages = fileManager.getDataPages(tabInfo);
+        List<Record> records = new ArrayList<>();
 
+        for (PageId pageId : dataPages) {
+            records.addAll(fileManager.getRecordsInDataPage(tabInfo, pageId));
+        }
+
+        return records;
+    }
+
+    // New method to get filtered records
+    public static List<Record> getFilteredRecords(TableInfo tabInfo, List<SelectCondition> conditions) throws IOException {
+        FileManager fileManager = FileManager.getInstance();
+        List<PageId> dataPages = fileManager.getDataPages(tabInfo);
+        List<Record> filteredRecords = new ArrayList<>();
+
+        for (PageId pageId : dataPages) {
+            List<Record> records = fileManager.getRecordsInDataPage(tabInfo, pageId);
+            for (Record record : records) {
+                if (record.matchesConditions(conditions)) {
+                    filteredRecords.add(record);
+                }
+            }
+        }
+
+        return filteredRecords;
+    }
+
+    // New method to check if a record matches the given conditions
+    private boolean matchesConditions(List<SelectCondition> conditions) {
+        if (conditions == null || conditions.isEmpty()) {
+            return true; // No conditions, all records match
+        }
+
+        for (SelectCondition condition : conditions) {
+            int columnIndex = condition.getColumnIndex();
+            String operator = condition.getOperator();
+            String value = condition.getValue();
+
+            // Retrieve the actual value from the record
+            String recordValue = recValues[columnIndex];
+
+            // Perform comparison based on the condition
+            if (!compareValues(recordValue, operator, value)) {
+                return false; // Record does not match this condition
+            }
+        }
+
+        return true; // All conditions are satisfied, record matches
+    }
+
+    // Helper method to compare values based on the specified operator
+    private boolean compareValues(String value1, String operator, String value2) {
+        switch (operator) {
+            case "=":
+                return value1.equals(value2);
+            case "<":
+                // Implement less than comparison logic
+                return value1.compareTo(value2) < 0;
+            case ">":
+                // Implement greater than comparison logic
+                return value1.compareTo(value2) > 0;
+            case "<=":
+                // Implement less than or equal to comparison logic
+                return value1.compareTo(value2) <= 0;
+            case ">=":
+                // Implement greater than or equal to comparison logic
+                return value1.compareTo(value2) >= 0;
+            case "<>":
+                // Implement not equal to comparison logic
+                return !value1.equals(value2);
+            default:
+                // Handle unsupported operators
+                throw new IllegalArgumentException("Unsupported operator: " + operator);
+        }
+    }
 }
-

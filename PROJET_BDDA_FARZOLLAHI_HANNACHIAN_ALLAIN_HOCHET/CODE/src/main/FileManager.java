@@ -127,44 +127,48 @@ public class FileManager {
     public List<PageId> getDataPages(TableInfo tabInfo) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         List<PageId> listDataPage = new ArrayList<>();
-        ByteBuffer headerPageBuffer;
-        ByteBuffer pageBuffer;
 
-        // add alls empty page to listDataPage
-        headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
-        int fileIdx = headerPageBuffer.getInt(0);
-        int pageIdx = headerPageBuffer.getInt(4);
-        bufferManager.freePage(tabInfo.getHeaderPageId(), false);
-        PageId dataPageId = new PageId(fileIdx, pageIdx);
-        listDataPage.add(dataPageId);
-        
-        while (pageIdx!=0||pageIdx!=-1) {
-            pageBuffer=bufferManager.getPage(dataPageId);
-            fileIdx=pageBuffer.getInt();
-            pageIdx=pageBuffer.getInt();
-            dataPageId=new PageId(fileIdx, pageIdx);          
+        ByteBuffer headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
+
+        try {
+            // Read empty pages
+            int fileIdx = headerPageBuffer.getInt(0);
+            int pageIdx = headerPageBuffer.getInt(4);
+            PageId dataPageId = new PageId(fileIdx, pageIdx);
             listDataPage.add(dataPageId);
             bufferManager.freePage(dataPageId, false);
-        }
 
-        //adds all filled pages
-        headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
-        fileIdx=headerPageBuffer.getInt(8);
-        pageIdx=headerPageBuffer.getInt(12); 
-        bufferManager.freePage(tabInfo.getHeaderPageId(), false);
-        dataPageId = new PageId(fileIdx, pageIdx);
-        listDataPage.add(dataPageId);
+            while (pageIdx != 0 && pageIdx != -1) {
+                ByteBuffer pageBuffer = bufferManager.getPage(dataPageId);
+                fileIdx = pageBuffer.getInt();
+                pageIdx = pageBuffer.getInt();
+                dataPageId = new PageId(fileIdx, pageIdx);
+                listDataPage.add(dataPageId);
+                bufferManager.freePage(dataPageId, false);
+            }
 
-        while (pageIdx!=0||pageIdx!=-1) {
-            pageBuffer=bufferManager.getPage(dataPageId);
-            fileIdx=pageBuffer.getInt();
-            pageIdx=pageBuffer.getInt();
-            dataPageId=new PageId(fileIdx, pageIdx);          
+            // Read filled pages
+            fileIdx = headerPageBuffer.getInt(8);
+            pageIdx = headerPageBuffer.getInt(12);
+            dataPageId = new PageId(fileIdx, pageIdx);
             listDataPage.add(dataPageId);
             bufferManager.freePage(dataPageId, false);
+
+            while (pageIdx != 0 && pageIdx != -1) {
+                ByteBuffer pageBuffer = bufferManager.getPage(dataPageId);
+                fileIdx = pageBuffer.getInt();
+                pageIdx = pageBuffer.getInt();
+                dataPageId = new PageId(fileIdx, pageIdx);
+                listDataPage.add(dataPageId);
+                bufferManager.freePage(dataPageId, false);
+            }
+        } finally {
+            bufferManager.freePage(tabInfo.getHeaderPageId(), false);
         }
+
         return listDataPage;
     }
+
 
     public RecordId InsertRecordIntoTable(Record record) throws IOException {
         // Step 1: Get the TableInfo for the table associated with the record
