@@ -40,10 +40,12 @@ public class SelectCommand implements ICommand {
         return conditionList;
     }
 
-    @Override
+     @Override
     public void execute() throws IOException {
         List<Record> records;
+        tableInfo = DatabaseInfo.getInstance().getTableInfo(tableName);
 
+     //   PageId headerPage = tableInfo.getHeaderPageId();
         if (conditions == null || conditions.isEmpty()) {
             // No conditions specified, select all records
             records = Record.getAllRecords(tableInfo);
