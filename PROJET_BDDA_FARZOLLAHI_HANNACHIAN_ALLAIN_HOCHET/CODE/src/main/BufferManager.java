@@ -39,12 +39,9 @@ public class BufferManager {
 	private Frame findFrame(PageId pageIdx) {
 		for (Frame frame : bufferPool) {
 			if (frame.getPageId() != null && frame.getPageId().equals(pageIdx)) {
-				// System.out.println("Access Count for Page " + pageIdx + ": " +
-				// frame.getPageId().getAccessCount());
 				return frame;
 			}
 		}
-		System.out.println("Access Count for Page " + pageIdx + " not found!");
 		return null;
 	}
 

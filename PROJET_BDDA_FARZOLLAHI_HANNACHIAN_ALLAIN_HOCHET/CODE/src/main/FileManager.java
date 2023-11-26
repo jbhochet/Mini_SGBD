@@ -6,7 +6,8 @@ import java.util.List;
 public class FileManager {
     private static FileManager instance;
 
-    public FileManager() {};
+    public FileManager() {
+    }
 
     public static FileManager getInstance() {
         if (instance == null)
@@ -19,93 +20,114 @@ public class FileManager {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer byteBuffer = bufferManager.getPage(headerPageId);
         // Fake page 1
-        byteBuffer.putInt(0, -1);
-        byteBuffer.putInt(4, 0);
+        byteBuffer.position(0);
+        byteBuffer.putInt(-1);
+        byteBuffer.putInt(-1);
         // Fake page 2
-        byteBuffer.putInt(8, -1);
-        byteBuffer.putInt(12, 0);
+        byteBuffer.putInt(-1);
+        byteBuffer.putInt(-1);
         // Write data
         bufferManager.freePage(headerPageId, true);
         return headerPageId;
     }
 
     public PageId addDataPage(TableInfo tabInfo) throws IOException {
-        PageId dataPage = DiskManager.getInstance().AllocPage();
+        PageId newDataPage = DiskManager.getInstance().AllocPage();
         BufferManager bufferManager = BufferManager.getInstance();
-        ByteBuffer dataPageBuffer = bufferManager.getPage(dataPage);
+        ByteBuffer buffer = bufferManager.getPage(newDataPage);
         // add fake pageId
-        dataPageBuffer.putInt(0, -1);
-        dataPageBuffer.putInt(1, 0);
-        // add slot directory
-        int index = DBParams.SGBDPageSize-4;
-        dataPageBuffer.putInt(index, 8*1024); // free space position
-        index-=4;
-        dataPageBuffer.putInt(index, 0); // Nb case in directory
+        buffer.position(0);
+        buffer.putInt(-1);
+        buffer.putInt(-1);
+        // add slot directory and free space
+        buffer.position(DBParams.SGBDPageSize - 8);
+        buffer.putInt(0); // Nb case in directory
+        buffer.putInt(8); // free space position
+        // free this data page
+        bufferManager.freePage(newDataPage, true);
         // Add this page in the list
-        PageId currentPage = tabInfo.getHeaderPageId();
-        PageId tempPage;
-        boolean foundLast = false;
+        PageId current = tabInfo.getHeaderPageId();
+        PageId temp;
         do {
-            ByteBuffer buffer = bufferManager.getPage(currentPage);
-            tempPage = currentPage;
-            currentPage = new PageId(buffer.getInt(), buffer.getInt());
-            if(currentPage.getFileIdx() == -1) {
-                foundLast = true;
-                buffer.putInt(0, dataPage.getFileIdx());
-                buffer.putInt(1, dataPage.getPageIdx());
-                bufferManager.freePage(tempPage, true);
-            } else {
-                bufferManager.freePage(tempPage, false);
-            }
-        } while(!foundLast);
+            buffer = bufferManager.getPage(current);
+            temp = current;
+            current = new PageId(buffer.getInt(0), buffer.getInt(4));
+            bufferManager.freePage(temp, false);
+            System.out.println(current);
+        } while (current.getFileIdx() != -1);
+        System.out.println(current);
 
-        bufferManager.freePage(dataPage, true);
-        
-        return dataPage;
-    }//CREATE TABLE R (C1:INT,C2:VARSTRING(3),C3:INT) INSERT INTO R VALUES (1,aab,2)
+        System.out.printf("%s ---> %s%n", temp, newDataPage);
+        buffer = bufferManager.getPage(temp);
+        buffer.position(0);
+        buffer.putInt(newDataPage.getFileIdx());
+        buffer.putInt(newDataPage.getPageIdx());
+        bufferManager.freePage(temp, true);
+
+        return newDataPage;
+    }
 
     private int getFreeSpace(ByteBuffer pageBuffer) {
-        pageBuffer.position(DBParams.SGBDPageSize-(2*4*1024));
+        pageBuffer.position(DBParams.SGBDPageSize - 8);
         int m = pageBuffer.getInt();
         int posFreeSpace = pageBuffer.getInt();
-        return DBParams.SGBDPageSize - posFreeSpace - (8*1024)*(m+1);
+        return DBParams.SGBDPageSize - posFreeSpace - 4 - 4 - m * 8 - 8; // -8 for the future slot dir entry
     }
 
     public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
+        PageId current = tabInfo.getHeaderPageId();
+        PageId temp;
+        ByteBuffer buffer;
         PageId res = null;
-        PageId currentPage = tabInfo.getHeaderPageId();
-        PageId tempPage;
-        boolean isFirst = true;
-        int freeSize = 0;
-        boolean foundLast = false;
-        do {
-            ByteBuffer buffer = bufferManager.getPage(currentPage);
-            tempPage = currentPage;
-            currentPage = new PageId(buffer.getInt(), buffer.getInt());
-            if(!isFirst) {
-                freeSize = getFreeSpace(buffer);
-                if(freeSize >= sizeRecord)
-                    res = tempPage;
-            }
-            if(currentPage.getFileIdx() == -1) {
-                foundLast = true;
-            }
-            bufferManager.freePage(tempPage, false);
+        System.out.println(current);
 
-        } while(!foundLast);
-        
+        do {
+            buffer = bufferManager.getPage(current);
+            temp = current;
+            if (!current.equals(tabInfo.getHeaderPageId()) && getFreeSpace(buffer) >= sizeRecord) {
+                res = current;
+                current = new PageId(-1, 0); // exit while
+            } else {
+                current = new PageId(buffer.getInt(0), buffer.getInt(4));
+            }
+            bufferManager.freePage(temp, false);
+            System.out.println(current);
+        } while (current.getFileIdx() != -1);
+
         return res;
     }
 
     public RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
-        ByteBuffer dataPageBuffer = bufferManager.getPage(pageId);
-        int startPosition = dataPageBuffer.position();
-        int bytesWritten = record.writeToBuffer(dataPageBuffer, startPosition);
+        ByteBuffer buffer;
+
+        buffer = bufferManager.getPage(pageId);
+        // buffer.position(0);
+        // test = new PageId(buffer.getInt(), buffer.getInt());
+        // System.out.printf("%s == %s => %b%n", pageId, test, pageId.equals(test));
+
+        // get free space position
+        int startPosition = buffer.getInt(DBParams.SGBDPageSize - 4);
+        System.out.printf("Start pos of %s = %s%n", pageId, startPosition);
+
+        // write record at the free space position
+        System.out.printf("Writed at %d%n", startPosition);
+        int bytesWritten = record.writeToBuffer(buffer, startPosition);
+
+        // update slot directory
+        int m = buffer.getInt(DBParams.SGBDPageSize - 8);
+        buffer.position(DBParams.SGBDPageSize - 4 - 4 - (m + 1) * 8);
+        buffer.putInt(startPosition);
+        buffer.putInt(bytesWritten);
+        buffer.putInt(DBParams.SGBDPageSize - 8, m + 1);
+
+        // update free space position
+        buffer.putInt(DBParams.SGBDPageSize - 4, startPosition + bytesWritten);
+
         bufferManager.freePage(pageId, true);
 
-        return new RecordId(pageId, startPosition / bytesWritten);
+        return new RecordId(pageId, m);
     }
 
     public List<Record> getRecordsInDataPage(TableInfo tabInfo, PageId pageId) throws IOException {
@@ -176,6 +198,10 @@ public class FileManager {
 
         // Step 2: Find a page with enough space for the new record
         PageId dataPageId = getFreeDataPageId(tabInfo, record.getSize());
+        if (dataPageId == null) {
+            dataPageId = addDataPage(tabInfo);
+        }
+        System.out.println(dataPageId);
 
         if (dataPageId == null) {
             // Handle the case where there is no page with enough space
@@ -186,19 +212,6 @@ public class FileManager {
         // Step 3: Write the record to the identified data page
         RecordId rid = writeRecordToDataPage(record, dataPageId);
 
-        // Step 4: Update any necessary metadata, e.g., in the header page
-        BufferManager bufferManager = BufferManager.getInstance();
-        ByteBuffer headerPageBuffer = bufferManager.getPage(tabInfo.getHeaderPageId());
-        int dataPageCount = headerPageBuffer.getInt();
-        headerPageBuffer.putInt(dataPageCount + 1); // Increment the data page count
-
-        // Append the new data page information to the header page
-        headerPageBuffer.putInt(dataPageId.getFileIdx());
-        headerPageBuffer.putInt(dataPageId.getPageIdx());
-
-        bufferManager.freePage(tabInfo.getHeaderPageId(), true);
-
-        // Step 5: Return the RecordId of the inserted record
         return rid;
     }
 

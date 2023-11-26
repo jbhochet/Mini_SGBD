@@ -39,9 +39,9 @@ public class TestRecord {
             PageId page = diskManager.AllocPage();
 
             ColInfo[] columns = new ColInfo[] {
-                    new ColInfo("prenom", DataType.STRING, 5),
-                    new ColInfo("nom", DataType.STRING, 5),
-                    new ColInfo("age", DataType.INT)
+                    new ColInfo("prenom", DataType.STRING, 5), // 5*2
+                    new ColInfo("nom", DataType.STRING, 5), // 5*2
+                    new ColInfo("age", DataType.INT) // 4
             };
 
             TableInfo tabInfo = new TableInfo("user", columns, null);
@@ -54,11 +54,20 @@ public class TestRecord {
 
             record1.setRecValues(new String[] { "Jb", "PAA", "10" });
 
+            System.out.printf("Size of record 1: %d%n", record1.getSize());
+
             System.out.println(record1);
 
-            int nbBytes1 = record1.writeToBuffer(buffer, 0);
+            buffer.position(0);
+            buffer.putInt(13);
+            buffer.putInt(10);
 
-            int nbBytes2 = record2.readFromBuffer(buffer, 0);
+            int nbBytes1 = record1.writeToBuffer(buffer, 8);
+
+            buffer.position(0);
+            System.out.printf("(%d, %d)%n", buffer.getInt(), buffer.getInt());
+
+            int nbBytes2 = record2.readFromBuffer(buffer, 8);
 
             System.out.println(record2);
 

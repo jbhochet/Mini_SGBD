@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Record {
@@ -26,12 +25,14 @@ public class Record {
         this.recValues = recValues;
     }
 
+
     public int writeToBuffer(ByteBuffer buffer, int pos) {
         buffer.position(pos);
 
         for (int i = 0; i < recValues.length; i++) {
             String value = recValues[i];
             DataType colType = tabInfo.getColumns()[i].getType();
+            System.out.println(pos);
 
             switch (colType) {
                 case INT:
@@ -57,10 +58,16 @@ public class Record {
     }
 
     private void writeFixedString(ByteBuffer buffer, String value, int maxLength) {
-        byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
-        buffer.put(Arrays.copyOf(stringBytes, maxLength));
+        for(int i=0; i<maxLength;i++) {
+            if(i<value.length()) {
+                buffer.putChar(value.charAt(i));
+            } else {
+                buffer.putChar(' ');
+            }
+        }
     }
 
+    // TODO: fix bad method
     private void writeVariableString(ByteBuffer buffer, String value) {
         byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
         buffer.putInt(stringBytes.length);
@@ -97,11 +104,14 @@ public class Record {
     }
 
     private String readFixedString(ByteBuffer buffer, int maxLength) {
-        byte[] stringBytes = new byte[maxLength];
-        buffer.get(stringBytes);
-        return new String(stringBytes, StandardCharsets.UTF_8).trim();
+        StringBuffer sb = new StringBuffer();
+        for(int i=0; i<maxLength; i++) {
+            sb.append(buffer.getChar());
+        }
+        return sb.toString();
     }
 
+    // TODO: bad method
     private String readVariableString(ByteBuffer buffer) {
         int stringLength = buffer.getInt();
         byte[] stringBytes = new byte[stringLength];
@@ -124,10 +134,10 @@ public class Record {
                     size += Float.BYTES;
                     break;
                 case STRING:
-                    size += tabInfo.getColumns()[i].getT();
+                    size += Character.BYTES * tabInfo.getColumns()[i].getT();
                     break;
                 case VARSTRING:
-                    size += Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
+                    size += Character.BYTES * value.length();
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported column type: " + colType);

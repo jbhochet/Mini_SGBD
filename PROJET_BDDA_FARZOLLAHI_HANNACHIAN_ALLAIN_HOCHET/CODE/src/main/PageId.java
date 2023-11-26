@@ -27,7 +27,7 @@ public class PageId implements Serializable {
         }
         PageId other = (PageId) obj;
         System.out.println("Comparing " + this + " with " + other);
-        return FileIdx == other.FileIdx && PageIdx == other.PageIdx;
+        return FileIdx == other.getFileIdx() && PageIdx == other.getPageIdx();
     }
 
     @Override
