@@ -28,7 +28,7 @@ public class DatabaseManager {
         } else if (command.startsWith("INSERT INTO")) {
             cmd = new InsertIntoCommand(command);
         } else if (command.startsWith("SELECT")) {
-        	cmd = new SelectCommand(command)
+        	cmd = new SelectCommand(command);
         } else if (command.startsWith("IMPORT INTO")) {
             cmd = new ImportCommand(command);
         }else if (command.startsWith("SELECTINDEX")) {
