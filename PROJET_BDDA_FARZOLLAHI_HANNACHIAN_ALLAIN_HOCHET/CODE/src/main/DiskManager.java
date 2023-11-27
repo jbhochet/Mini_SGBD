@@ -87,7 +87,7 @@ public class DiskManager {
         RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
         dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement
                                                                            // spécifié
-        dataFile.getChannel().write(buffer); // Écrire le contenu du ByteBuffer dans le fichier
+        dataFile.write(buffer.array()); // Écrire le contenu du ByteBuffer dans le fichier
         dataFile.close();
     }
 
