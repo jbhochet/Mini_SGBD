@@ -19,7 +19,7 @@ public class SelectIndexCommand implements ICommand {
         // A completer
     }
 
-    private Index getIndexForColumn(TableInfo tableInfo, String columnName) {
+    private void getIndexForColumn(TableInfo tableInfo, String columnName) {
         // A completer
         // Exemple factice :
         // return IndexManager.getInstance().getIndexForColumn(tableInfo, columnName);
