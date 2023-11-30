@@ -29,10 +29,10 @@ public class SelectCommand implements ICommand {
         String[] conditionStrings = conditionsStr.split(" AND ");
         for (String conditionString : conditionStrings) {
             String[] parts = conditionString.split("(=|<|>|<=|>=|<>)");
-            if (parts.length == 3) {
+            String operator = conditionString.replaceAll("[^=<>]+", "");
+            if (parts.length == 2) {
                 int columnIndex = tableInfo.getColumnIndex(parts[0].trim());
-                String operator = parts[1].trim();
-                String value = parts[2].trim();
+                String value = parts[1].trim();
                 conditionList.add(new SelectCondition(columnIndex, operator, value));
             }
         }
