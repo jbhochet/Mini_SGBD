@@ -19,7 +19,7 @@ public class ResetDBCommand implements ICommand {
         BufferManager bufferManager = BufferManager.getInstance();
         DiskManager diskManager = DiskManager.getInstance();
 
-        // reset all falgs
+        // reset all flags
         diskManager.reset();
         bufferManager.reset();
         databaseInfo.reset();

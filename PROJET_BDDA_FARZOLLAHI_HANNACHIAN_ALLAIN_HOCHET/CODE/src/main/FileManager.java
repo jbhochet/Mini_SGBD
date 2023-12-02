@@ -210,4 +210,13 @@ public class FileManager {
         return rid;
     }
 
+
+    /*public void DeleteRecordFromTable(Record record) throws IOException {
+        // Step 1: Get the TableInfo for the table associated with the record
+        TableInfo tabInfo = record.getTabInfo();
+
+        // Step 3: Write the record to the identified data page
+        RecordId rid = writeRecordToDataPage(record, );
+
+    }*/
 }
