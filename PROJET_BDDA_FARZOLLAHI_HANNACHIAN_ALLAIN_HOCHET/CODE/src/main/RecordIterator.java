@@ -2,73 +2,38 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class RecordIterator {
-    private PageId pageIdx;
+    private PageId pageId;
     private TableInfo tabinfo;
-    private ByteBuffer dataPageBuffer;
-    private int slotIdx;
+    private ByteBuffer buffer;
+    private int cursor;
+    private int nbRecord;
 
-    public RecordIterator(TableInfo tabinfo, PageId pageIdx) throws IOException {
+    public RecordIterator(TableInfo tabinfo, PageId pageId) throws IOException {
         this.tabinfo = tabinfo;
-        this.pageIdx = pageIdx;
-        this.slotIdx = 0;
-        this.dataPageBuffer = BufferManager.getInstance().getPage(pageIdx);
+        this.pageId = pageId;
+        this.buffer = BufferManager.getInstance().getPage(pageId);
+        nbRecord = buffer.getInt(DBParams.SGBDPageSize - 8);
+        reset();
     }
 
-     public Record GetNextRecord() {
-        int slotsCount = getSlotsCount();
-
-        if (slotIdx >= slotsCount) {
-            return null; // No more records on the page
-        }
-
-        int startPosition = getStartPosition(slotIdx);
+    public Record getNextRecord() {
+        if (cursor == nbRecord)
+            return null;
+        
         Record record = new Record(tabinfo);
-        int bytesRead = record.readFromBuffer(dataPageBuffer, startPosition);
+        record.readFromBuffer(buffer, buffer.position());
 
-        slotIdx++;
-
-        if (bytesRead == 0) {
-            return GetNextRecord(); // Skip deleted records
-        }
+        cursor++;
 
         return record;
     }
 
-    private int getSlotsCount() {
-        return dataPageBuffer.getInt(0);
+    public void close() throws IOException {
+        BufferManager.getInstance().freePage(pageId, false);
     }
 
-    private int getStartPosition(int slotIdx) {
-        // Each slot is 8 bytes (start position + record size)
-        int offset = 4 + slotIdx * 8;
-        return dataPageBuffer.getInt(offset);
-    }
-
-    public void Close() throws IOException {
-        BufferManager.getInstance().freePage(pageIdx, false);
-    }
-
-    public void Reset() {
-        this.slotIdx = 0;
+    public void reset() {
+        cursor = 0;
+        buffer.position(8); // after the page id
     }
 }
-
-/*
-public Record GetNextRecord(){
-    if (dataPageBuffer.remaining() <= 0) {
-        return null; // No more records on the page
-    }
-
-    int startPosition = dataPageBuffer.position();
-    Record record = new Record(tabinfo);
-    int bytesRead = record.readFromBuffer(dataPageBuffer, startPosition);
-
-    if (bytesRead > 0) {
-        // Move to the next slot index
-        slotIdx++;
-        return record;
-    } else {
-        return null; // Unable to read a complete record
-    }
-}
-*/

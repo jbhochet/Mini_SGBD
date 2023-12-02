@@ -154,7 +154,7 @@ public class Record {
         for (String val : recValues) {
             sb.append(val).append(", ");
         }
-        sb.append(")\n");
+        sb.append(")");
         return sb.toString();
     }
 

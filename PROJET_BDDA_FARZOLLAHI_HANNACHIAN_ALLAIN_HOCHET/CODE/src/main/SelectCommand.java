@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,36 +22,24 @@ public class SelectCommand implements ICommand {
 
     @Override
     public void execute() throws IOException {
-        List<Record> records;
-        TableInfo tableInfo = DatabaseInfo.getInstance().getTableInfo(tableName);
+        DatabaseInfo databaseInfo = DatabaseInfo.getInstance();
+        FileManager fileManager = FileManager.getInstance();
+        TableInfo tableInfo = databaseInfo.getTableInfo(tableName);
+        RecordIterator recordIterator;
+        Record record;
+        int nb = 0;
 
-        if (conditions == null) {
-            // No conditions specified, select all records
-            records = Record.getAllRecords(tableInfo);
-        } else {
-            records = new ArrayList<>();
-            for (Record record : Record.getAllRecords(tableInfo)) {
-                if (ConditionUtil.checkAll(record, conditions))
-                    records.add(record);
-            }
-        }
-
-        // Display records
-        displayRecords(records);
-    }
-
-    private void displayRecords(List<Record> records) {
-        for (Record record : records) {
-            String[] values = record.getRecValues();
-            for (int i = 0; i < values.length; i++) {
-                System.out.print(values[i]);
-                if (i < values.length - 1) {
-                    System.out.print("; ");
+        for(PageId page: fileManager.getDataPages(tableInfo)) {
+            recordIterator = new RecordIterator(tableInfo, page);
+            while((record = recordIterator.getNextRecord()) != null) {
+                if(conditions == null || ConditionUtil.checkAll(record, conditions)) {
+                    System.out.println(record);
+                    nb++;
                 }
             }
-            System.out.println(".");
+            recordIterator.close();
         }
 
-        System.out.println("Total records=" + records.size());
+        System.out.println("Total records=" + String.valueOf(nb));
     }
 }
