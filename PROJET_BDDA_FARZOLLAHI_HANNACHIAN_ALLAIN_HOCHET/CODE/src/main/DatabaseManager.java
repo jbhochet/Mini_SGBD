@@ -16,6 +16,7 @@ public class DatabaseManager {
 
     public void finish() throws IOException, ClassNotFoundException {
         DatabaseInfo.getInstance().finish();
+        BufferManager.getInstance().flushAll();
     }
 
     public void processCommand(String command) throws IOException {
