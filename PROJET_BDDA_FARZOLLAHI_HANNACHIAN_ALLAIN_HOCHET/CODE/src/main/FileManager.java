@@ -54,11 +54,8 @@ public class FileManager {
             temp = current;
             current = new PageId(buffer.getInt(0), buffer.getInt(4));
             bufferManager.freePage(temp, false);
-            System.out.println(current);
         } while (current.getFileIdx() != -1);
-        System.out.println(current);
 
-        System.out.printf("%s ---> %s%n", temp, newDataPage);
         buffer = bufferManager.getPage(temp);
         buffer.position(0);
         buffer.putInt(newDataPage.getFileIdx());
@@ -81,7 +78,6 @@ public class FileManager {
         PageId temp;
         ByteBuffer buffer;
         PageId res = null;
-        System.out.println(current);
 
         do {
             buffer = bufferManager.getPage(current);
@@ -93,7 +89,6 @@ public class FileManager {
                 current = new PageId(buffer.getInt(0), buffer.getInt(4));
             }
             bufferManager.freePage(temp, false);
-            System.out.println(current);
         } while (current.getFileIdx() != -1);
 
         return res;
@@ -107,10 +102,8 @@ public class FileManager {
 
         // get free space position
         int startPosition = buffer.getInt(DBParams.SGBDPageSize - 4);
-        System.out.printf("Start pos of %s = %s%n", pageId, startPosition);
 
         // write record at the free space position
-        System.out.printf("Writed at %d%n", startPosition);
         int bytesWritten = record.writeToBuffer(buffer, startPosition);
 
         // update slot directory
@@ -196,7 +189,6 @@ public class FileManager {
         if (dataPageId == null) {
             dataPageId = addDataPage(tabInfo);
         }
-        System.out.println(dataPageId);
 
         if (dataPageId == null) {
             // Handle the case where there is no page with enough space

@@ -34,7 +34,7 @@ public class DatabaseManager {
         }else if (command.startsWith("SELECTINDEX")) {
             cmd = new SelectIndexCommand(command);
         } else {
-            throw new IllegalArgumentException("Unknown command!");
+            throw new IllegalArgumentException("Unknown command: "+command);
         }
 
         cmd.execute();

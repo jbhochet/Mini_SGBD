@@ -4,7 +4,6 @@ import java.util.List;
 public class ConditionUtil {
 
     public static List<Condition> parseConditions(String conditions) {
-        System.out.println(conditions);
         String[] conditionsArray = conditions.split(" AND ");
         List<Condition> res = new ArrayList<>();
 

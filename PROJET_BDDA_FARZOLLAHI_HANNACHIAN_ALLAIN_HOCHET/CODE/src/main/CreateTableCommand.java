@@ -44,6 +44,9 @@ public class CreateTableCommand implements ICommand {
             case "INT":
                 type = DataType.INT;
                 break;
+            case "FLOAT":
+                type = DataType.FLOAT;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown type!");
         }
