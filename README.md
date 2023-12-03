@@ -133,8 +133,8 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 
 | Répertoire / Fichier                                                                                                            | Description                                             |
 |---------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| [scripts](#scripts)                                                                                                             | Contient les scripts pour la compilation et l'exécution |
-| [src](#src)                                                                                                                     | Contient le code source du projet                       |
+| [scripts](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts)       | Contient les scripts pour la compilation et l'exécution |
+| [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src)               | Contient le code source du projet                       |
 | [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) | Script Python pour gérer certaines tâches du SGBD       |
 
 ### [scripts](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts) : Scripts pour la compilation et l'exécution
@@ -147,10 +147,10 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 
 ### [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src) : Code source du projet
 
-| Répertoire    | Description                                             |
-|---------------|---------------------------------------------------------|
-| [main](#main) | Contient les classes principales du projet              |
-| [test](#test) | Contient les tests pour évaluer les différentes classes |
+| Répertoire                                                                                                              | Description                                             |
+|-------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| [main](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main) | Contient les classes principales du projet              |
+| [test](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/test) | Contient les tests pour évaluer les différentes classes |
 
 ### [main](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main) : Classes principales du projet
 
