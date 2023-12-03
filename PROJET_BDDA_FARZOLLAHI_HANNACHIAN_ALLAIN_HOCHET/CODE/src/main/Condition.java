@@ -2,7 +2,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Condition {
-    public static Pattern PATTERN = Pattern.compile("^(\\w+)(=|<|>|<=|>=|<>)(\\w+)$");
+    public static Pattern PATTERN = Pattern.compile("^(\\w+)(=|<|>|<=|>=|<>)(.+)$");
 
     private String column;
     private String operator;
