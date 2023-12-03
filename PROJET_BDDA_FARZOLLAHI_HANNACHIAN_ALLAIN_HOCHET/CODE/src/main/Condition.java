@@ -30,16 +30,16 @@ public class Condition {
                 res = recValue.equals(value);
                 break;
             case "<":
-                res = recValue.compareTo(value) < 0;
+                res =Integer.parseInt(recValue)<Integer.parseInt(value);;
                 break;
             case ">":
-                res = recValue.compareTo(value) > 0;
+                res = Integer.parseInt(recValue)>Integer.parseInt(value);
                 break;
             case "<=":
-                res = recValue.compareTo(value) <= 0;
+                res = Integer.parseInt(recValue)<=Integer.parseInt(value);
                 break;
             case ">=":
-                res = recValue.compareTo(value) >= 0;
+                res = Integer.parseInt(recValue)>=Integer.parseInt(value);
                 break;
             case "<>":
                 res = !recValue.equals(value);
