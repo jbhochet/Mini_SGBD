@@ -12,7 +12,7 @@ public class Condition {
         Matcher matcher = PATTERN.matcher(condition);
 
         if (!matcher.matches())
-            throw new IllegalArgumentException("Invalid condition!");
+            throw new IllegalArgumentException("Invalid condition: " + condition);
 
         column = matcher.group(1);
         operator = matcher.group(2);

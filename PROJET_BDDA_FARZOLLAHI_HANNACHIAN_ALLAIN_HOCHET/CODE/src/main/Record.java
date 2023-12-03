@@ -1,8 +1,5 @@
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Record {
     private TableInfo tabInfo;
@@ -25,16 +22,37 @@ public class Record {
         this.recValues = recValues;
     }
 
+    private void putString(ByteBuffer buffer, String value, int size) {
+        for (int i = 0; i < size; i++) {
+            if (i < value.length()) {
+                buffer.putChar(value.charAt(i));
+            } else {
+                buffer.putChar(' ');
+            }
+        }
+    }
 
     public int writeToBuffer(ByteBuffer buffer, int pos) {
-        buffer.position(pos);
+        int tempPosition;
+
+        // if the tableinfo is variable, we must write data after the offset directory
+        if (tabInfo.isVariable()) {
+            buffer.position(pos + (recValues.length * 2 * 4));
+        } else {
+            buffer.position(pos);
+        }
 
         for (int i = 0; i < recValues.length; i++) {
             String value = recValues[i];
-            DataType colType = tabInfo.getColumns()[i].getType();
-            System.out.println(pos);
-
-            switch (colType) {
+            ColInfo col = tabInfo.getColumns()[i];
+            // write the start position
+            if (tabInfo.isVariable()) {
+                tempPosition = buffer.position();
+                buffer.putInt(pos + i * 4, tempPosition);
+                buffer.position(tempPosition);
+            }
+            // write the value
+            switch (col.getType()) {
                 case INT:
                     int intValue = Integer.parseInt(value);
                     buffer.putInt(intValue);
@@ -44,43 +62,44 @@ public class Record {
                     buffer.putFloat(floatValue);
                     break;
                 case STRING:
-                    writeFixedString(buffer, value, tabInfo.getColumns()[i].getT());
+                    putString(buffer, value, col.getT());
                     break;
                 case VARSTRING:
-                    writeVariableString(buffer, value);
+                    putString(buffer, value, value.length());
                     break;
                 default:
-                    throw new IllegalArgumentException("Unsupported column type: " + colType);
+                    throw new IllegalArgumentException("Unsupported column type: " + col.getType());
+            }
+            // write the end position
+            if (tabInfo.isVariable()) {
+                tempPosition = buffer.position();
+                buffer.putInt(pos + (i + 1) * 4, tempPosition);
+                buffer.position(tempPosition);
             }
         }
 
         return buffer.position() - pos;
     }
 
-    private void writeFixedString(ByteBuffer buffer, String value, int maxLength) {
-        for(int i=0; i<maxLength;i++) {
-            if(i<value.length()) {
-                buffer.putChar(value.charAt(i));
-            } else {
-                buffer.putChar(' ');
-            }
-        }
-    }
-
-    // TODO: fix bad method
-    private void writeVariableString(ByteBuffer buffer, String value) {
-        byte[] stringBytes = value.getBytes(StandardCharsets.UTF_8);
-        buffer.putInt(stringBytes.length);
-        buffer.put(stringBytes);
+    private String getString(ByteBuffer buffer, int size) {
+        StringBuffer sb = new StringBuffer(size);
+        for(int i = 0; i<size; i++)
+            sb.append(buffer.getChar());
+        return sb.toString();
     }
 
     public int readFromBuffer(ByteBuffer buffer, int pos) {
-        buffer.position(pos);
+        // if the tableinfo is variable, we must read data after the offset directory
+        if (tabInfo.isVariable()) {
+            buffer.position(pos + (recValues.length * 2 * 4));
+        } else {
+            buffer.position(pos);
+        }
 
         for (int i = 0; i < tabInfo.getNumberOfColumns(); i++) {
-            DataType colType = tabInfo.getColumns()[i].getType();
+            ColInfo col = tabInfo.getColumns()[i];
 
-            switch (colType) {
+            switch (col.getType()) {
                 case INT:
                     int intValue = buffer.getInt();
                     recValues[i] = String.valueOf(intValue);
@@ -90,37 +109,28 @@ public class Record {
                     recValues[i] = String.valueOf(floatValue);
                     break;
                 case STRING:
-                    recValues[i] = readFixedString(buffer, tabInfo.getColumns()[i].getT());
+                    recValues[i] = getString(buffer, col.getT());
                     break;
                 case VARSTRING:
-                    recValues[i] = readVariableString(buffer);
+                    int tempPosition = buffer.position();
+                    int endVarStringPos = buffer.getInt(pos + (i + 1) * 4);
+                    int size = (endVarStringPos-tempPosition)/2;
+                    buffer.position(tempPosition);
+                    recValues[i] = getString(buffer, size);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unsupported column type: " + colType);
+                    throw new IllegalArgumentException("Unsupported column type: " + col.getType());
             }
         }
 
         return buffer.position() - pos;
     }
 
-    private String readFixedString(ByteBuffer buffer, int maxLength) {
-        StringBuffer sb = new StringBuffer();
-        for(int i=0; i<maxLength; i++) {
-            sb.append(buffer.getChar());
-        }
-        return sb.toString();
-    }
-
-    // TODO: bad method
-    private String readVariableString(ByteBuffer buffer) {
-        int stringLength = buffer.getInt();
-        byte[] stringBytes = new byte[stringLength];
-        buffer.get(stringBytes);
-        return new String(stringBytes, StandardCharsets.UTF_8);
-    }
-
     public int getSize() {
         int size = 0;
+
+        if (tabInfo.isVariable())
+            size += recValues.length * 4 * 2;
 
         for (int i = 0; i < recValues.length; i++) {
             String value = recValues[i];
@@ -156,18 +166,5 @@ public class Record {
         }
         sb.append(")");
         return sb.toString();
-    }
-
-    // New method to get all records
-    public static List<Record> getAllRecords(TableInfo tabInfo) throws IOException {
-        FileManager fileManager = FileManager.getInstance();
-        List<PageId> dataPages = fileManager.getDataPages(tabInfo);
-        List<Record> records = new ArrayList<>();
-
-        for (PageId pageId : dataPages) {
-            records.addAll(fileManager.getRecordsInDataPage(tabInfo, pageId));
-        }
-
-        return records;
     }
 }

@@ -1,16 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 public class ConditionUtil {
 
     public static List<Condition> parseConditions(String conditions) {
         System.out.println(conditions);
-        StringTokenizer st = new StringTokenizer(conditions, " AND ");
+        String[] conditionsArray = conditions.split(" AND ");
         List<Condition> res = new ArrayList<>();
 
-        while (st.hasMoreTokens()) {
-            res.add(new Condition(st.nextToken()));
+        for(int i = 0; i<conditionsArray.length; i++) {
+            res.add(new Condition(conditionsArray[i]));
         }
 
         return res;
