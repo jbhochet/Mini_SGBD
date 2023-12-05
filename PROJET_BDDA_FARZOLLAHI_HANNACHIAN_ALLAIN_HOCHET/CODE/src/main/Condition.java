@@ -19,31 +19,52 @@ public class Condition {
         value = matcher.group(3);
     }
 
+    private static int compare(DataType type, String val1, String val2) {
+        int res;
+        if (type == DataType.INT) {
+            Integer a = Integer.parseInt(val1);
+            Integer b = Integer.parseInt(val2);
+            res = a.compareTo(b);
+        } else if (type == DataType.FLOAT) {
+            Float a = Float.parseFloat(val1);
+            Float b = Float.parseFloat(val2);
+            res = a.compareTo(b);
+        } else if (type == DataType.STRING || type == DataType.VARSTRING) {
+            res = val1.compareTo(val2);
+        } else {
+            throw new IllegalArgumentException("Unknow type: " + type);
+        }
+        return res;
+    }
+
     public boolean check(Record record) {
         TableInfo tableInfo = record.getTabInfo();
         int index = tableInfo.getColumnIndex(column);
         String recValue = record.getRecValues()[index];
-        boolean res = false;
+        int compareResult = compare(tableInfo.getColumns()[index].getType(), recValue, this.value);
+        boolean res;
 
         switch (operator) {
             case "=":
-                res = recValue.equals(value);
+                res = compareResult == 0;
                 break;
             case "<":
-                res =Double.parseDouble(recValue)<Double.parseDouble(value);
+                res = compareResult < 0;
                 break;
             case ">":
-                res = Double.parseDouble(recValue)>Double.parseDouble(value);
+                res = compareResult > 0;
                 break;
             case "<=":
-                res = Double.parseDouble(recValue)<=Double.parseDouble(value);
+                res = compareResult <= 0;
                 break;
             case ">=":
-                res = Double.parseDouble(recValue)>=Double.parseDouble(value);
+                res = compareResult >= 0;
                 break;
             case "<>":
-                res = !recValue.equals(value);
+                res = compareResult != 0;
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown operator: " + operator);
         }
 
         return res;
