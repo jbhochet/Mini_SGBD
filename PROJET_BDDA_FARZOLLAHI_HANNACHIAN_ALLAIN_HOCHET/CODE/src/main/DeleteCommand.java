@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,10 +24,13 @@ public class DeleteCommand implements ICommand {
     
     @Override
     public void execute() throws IOException {
+        DiskManager diskManager=DiskManager.getInstance();
         DatabaseInfo databaseInfo = DatabaseInfo.getInstance();
         TableInfo tableInfo = databaseInfo.getTableInfo(tableName);
         FileManager fileManager = FileManager.getInstance();
-
+        List<Record> listRecords=new ArrayList<Record>();
+        ByteBuffer buffer;
+        
         RecordIterator recordIterator;
         Record record;
         int nb = 0;
@@ -33,12 +38,20 @@ public class DeleteCommand implements ICommand {
         for(PageId page: fileManager.getDataPages(tableInfo)) {
             recordIterator = new RecordIterator(tableInfo, page);
             while((record = recordIterator.getNextRecord()) != null) {
-                if(conditions == null || ConditionUtil.checkAll(record, conditions)) {
-                    //TODO : methode pour supprimer le record (hard delete) surement via fileManager
+                if(conditions != null && ConditionUtil.checkAll(record, conditions)==false) {
+                    listRecords.add(record);
+                }
+                else{
                     nb++;
                 }
             }
             recordIterator.close();
+            diskManager.DeallocPage(page);
+            buffer=BufferManager.getInstance().getPage(tableInfo.getHeaderPageId());
+            buffer.position(0);
+            buffer.putInt(-1);
+            buffer.putInt(-1);
+            
         }
     }
 }

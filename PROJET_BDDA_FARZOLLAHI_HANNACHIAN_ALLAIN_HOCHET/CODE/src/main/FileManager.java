@@ -147,7 +147,7 @@ public class FileManager {
         PageId pageId;
         PageId tempPageId;
 
-        // Read empty pages
+        // Read non filled pages
         buffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         buffer.position(0);
         pageId = new PageId(buffer.getInt(), buffer.getInt());
