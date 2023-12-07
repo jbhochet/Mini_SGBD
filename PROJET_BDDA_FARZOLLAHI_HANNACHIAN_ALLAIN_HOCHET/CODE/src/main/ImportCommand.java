@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 public class ImportCommand implements ICommand {
     public static final Pattern PATTERN = Pattern.compile("^IMPORT INTO (\\w+) (\\w+.csv)$");
     public static final String DELIM = ",";
-
     private String relation;
     private File file;
 
     public ImportCommand(String command) {
         Matcher matcher = PATTERN.matcher(command);
-        if (!matcher.matches())
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("This command does not match IMPORT pattern!");
+        }
         this.relation = matcher.group(1);
         this.file = new File(matcher.group(2));
     }
@@ -26,7 +26,6 @@ public class ImportCommand implements ICommand {
         FileManager fileManager = FileManager.getInstance();
         Record record;
         String line;
-
         try (BufferedReader reader = new BufferedReader(new FileReader(this.file))) {
             while ((line = reader.readLine()) != null) {
                 record = new Record(tableInfo);

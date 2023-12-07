@@ -36,15 +36,5 @@ public class TestFileManager {
         bufferManager = BufferManager.getInstance();
 
         fileManager = FileManager.getInstance();
-
-        /*
-        try {
-            
-
-        } catch(IOException err) {
-            System.err.println(err.getMessage());
-            err.printStackTrace();
-        }
-        */
     }
 }

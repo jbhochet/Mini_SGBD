@@ -57,5 +57,4 @@ public class Frame {
         return String.format("Frame: pageId=%s, pinCount=%d, dirty=%b",
                 (pageId == null) ? "null" : pageId.toString(), pinCount, dirty);
     }
-
 }

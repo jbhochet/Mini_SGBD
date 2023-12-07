@@ -4,8 +4,9 @@ public class DatabaseManager {
     private static DatabaseManager instance;
 
     public static DatabaseManager getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new DatabaseManager();
+        }
         return instance;
     }
 
@@ -21,7 +22,6 @@ public class DatabaseManager {
 
     public void processCommand(String command) throws IOException {
         ICommand cmd = null;
-
         if (command.startsWith("CREATE TABLE")) {
             cmd = new CreateTableCommand(command);
         } else if (command.startsWith("RESETDB")) {
@@ -32,16 +32,13 @@ public class DatabaseManager {
         	cmd = new SelectCommand(command);
         } else if (command.startsWith("IMPORT INTO")) {
             cmd = new ImportCommand(command);
-        }else if (command.startsWith("SELECTINDEX")) {
+        } else if (command.startsWith("SELECTINDEX")) {
             cmd = new SelectIndexCommand(command);
-        }else if (command.startsWith("DELETE")) {
+        } else if (command.startsWith("DELETE")) {
             cmd = new DeleteCommand(command);
         } else {
-            throw new IllegalArgumentException("Unknown command: "+command);
+            throw new IllegalArgumentException("Unknown command: " + command);
         }
-
         cmd.execute();
     }
-
-
 }

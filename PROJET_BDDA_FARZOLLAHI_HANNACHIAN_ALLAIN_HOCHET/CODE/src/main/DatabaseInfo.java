@@ -12,7 +12,6 @@ public class DatabaseInfo {
     public static final String SAVE_FILE = "DBInfo.save";
     private static DatabaseInfo instance;
     private Map<String, TableInfo> tables;
-
     private DatabaseInfo() {
         this.tables = new HashMap<>();
     }
@@ -31,8 +30,9 @@ public class DatabaseInfo {
 
     public void init() throws IOException, ClassNotFoundException {
         File file = getSaveFile();
-        if (!file.exists())
+        if (!file.exists()) {
             return;
+        }
         FileInputStream fis = new FileInputStream(file);
         try (ObjectInputStream ois = new ObjectInputStream(fis)) {
             Object[] objects = (Object[]) ois.readObject();
@@ -66,5 +66,4 @@ public class DatabaseInfo {
     public TableInfo getTableInfo(String tableName) {
         return tables.get(tableName);
     }
-
 }

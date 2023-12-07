@@ -10,21 +10,24 @@ public class BufferManager {
 
 	public BufferManager() {
 		bufferPool = new Frame[DBParams.FrameCount];
-		for (int i = 0; i < DBParams.FrameCount; i++)
+		for (int i = 0; i < DBParams.FrameCount; i++) {
 			bufferPool[i] = new Frame();
+		}
 		accessByPages = new HashMap<>();
 	}
 
 	// Get the singleton instance of BufferManager
 	public static BufferManager getInstance() {
-		if (instance == null)
+		if (instance == null) {
 			instance = new BufferManager();
+		}
 		return instance;
 	}
 
 	public void reset() {
-		for (int i = 0; i < bufferPool.length; i++)
+		for (int i = 0; i < bufferPool.length; i++) {
 			bufferPool[i] = new Frame();
+		}
 		accessByPages.clear();
 	}
 
@@ -59,8 +62,9 @@ public class BufferManager {
 				} else {
 					int resAccessCount = accessByPages.getOrDefault(res.getPageId().toString(), 0);
 					int frameAccessCount = accessByPages.getOrDefault(frame.getPageId().toString(), 0);
-					if (resAccessCount > frameAccessCount)
+					if (resAccessCount > frameAccessCount) {
 						res = frame;
+					}
 				}
 			}
 		}
@@ -109,21 +113,13 @@ public class BufferManager {
 
 	// Write all frames buffers on the disk if needed and reset all flags
 	public void flushAll() throws IOException {
-		for (Frame frame : bufferPool)
+		for (Frame frame : bufferPool) {
 			flush(frame);
-	}
-
-	public void printBufferPoolStatus(String status) {
-		System.out.println("Buffer Pool Status " + status + ":");
-		for (int i = 0; i < bufferPool.length; i++) {
-			System.out.println("Frame " + i + ": " + bufferPool[i]);
 		}
-		System.out.println();
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
-
+		StringBuilder sb = new StringBuilder();
 		sb.append("===============\n");
 		sb.append("BufferManager\n");
 		for (Frame frame : bufferPool) {
@@ -135,7 +131,6 @@ public class BufferManager {
 		}
 		sb.append("}\n");
 		sb.append("===============");
-
 		return sb.toString();
 	}
 }

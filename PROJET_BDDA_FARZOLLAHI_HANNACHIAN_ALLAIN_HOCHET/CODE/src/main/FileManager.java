@@ -7,6 +7,7 @@ public class FileManager {
     private static FileManager instance;
 
     private FileManager() {
+        // Empty constructor
     }
 
     public static FileManager getInstance() {
@@ -55,13 +56,11 @@ public class FileManager {
             current = new PageId(buffer.getInt(0), buffer.getInt(4));
             bufferManager.freePage(temp, false);
         } while (current.getFileIdx() != -1);
-
         buffer = bufferManager.getPage(temp);
         buffer.position(0);
         buffer.putInt(newDataPage.getFileIdx());
         buffer.putInt(newDataPage.getPageIdx());
         bufferManager.freePage(temp, true);
-
         return newDataPage;
     }
 
@@ -78,7 +77,6 @@ public class FileManager {
         PageId temp;
         ByteBuffer buffer;
         PageId res = null;
-
         do {
             buffer = bufferManager.getPage(current);
             temp = current;
@@ -90,34 +88,26 @@ public class FileManager {
             }
             bufferManager.freePage(temp, false);
         } while (current.getFileIdx() != -1);
-
         return res;
     }
 
     private RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer;
-
         buffer = bufferManager.getPage(pageId);
-
         // get free space position
         int startPosition = buffer.getInt(DBParams.SGBDPageSize - 4);
-
         // write record at the free space position
         int bytesWritten = record.writeToBuffer(buffer, startPosition);
-
         // update slot directory
         int m = buffer.getInt(DBParams.SGBDPageSize - 8);
         buffer.position(DBParams.SGBDPageSize - 4 - 4 - (m + 1) * 8);
         buffer.putInt(startPosition);
         buffer.putInt(bytesWritten);
         buffer.putInt(DBParams.SGBDPageSize - 8, m + 1);
-
         // update free space position
         buffer.putInt(DBParams.SGBDPageSize - 4, startPosition + bytesWritten);
-
         bufferManager.freePage(pageId, true);
-
         return new RecordId(pageId, m);
     }
 
@@ -129,13 +119,11 @@ public class FileManager {
         List<Record> records = new ArrayList<>();
         int m = buffer.getInt(DBParams.SGBDPageSize - 8);
         buffer.position(8); // after the next page id
-
         for (int i = 0; i < m; i++) {
             record = new Record(tabInfo);
             record.readFromBuffer(buffer, buffer.position());
             records.add(record);
         }
-
         return records;
     }
 
@@ -146,13 +134,11 @@ public class FileManager {
         ByteBuffer buffer;
         PageId pageId;
         PageId tempPageId;
-
         // Read non filled pages
         buffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         buffer.position(0);
         pageId = new PageId(buffer.getInt(), buffer.getInt());
         bufferManager.freePage(tabInfo.getHeaderPageId(), false);
-
         while (pageId.getFileIdx() != -1) {
             listDataPage.add(pageId);
             buffer = bufferManager.getPage(pageId);
@@ -161,13 +147,11 @@ public class FileManager {
             pageId = new PageId(buffer.getInt(), buffer.getInt());
             bufferManager.freePage(tempPageId, false);
         }
-
         // Read filled pages
         buffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         buffer.position(8);
         pageId = new PageId(buffer.getInt(), buffer.getInt());
         bufferManager.freePage(tabInfo.getHeaderPageId(), false);
-
         while (pageId.getFileIdx() != -1) {
             listDataPage.add(pageId);
             buffer = bufferManager.getPage(pageId);
@@ -176,7 +160,6 @@ public class FileManager {
             pageId = new PageId(buffer.getInt(), buffer.getInt());
             bufferManager.freePage(tempPageId, false);
         }
-
         return listDataPage;
     }
 
@@ -201,14 +184,4 @@ public class FileManager {
 
         return rid;
     }
-
-
-    /*public void DeleteRecordFromTable(Record record) throws IOException {
-        // Step 1: Get the TableInfo for the table associated with the record
-        TableInfo tabInfo = record.getTabInfo();
-
-        // Step 3: Write the record to the identified data page
-        RecordId rid = writeRecordToDataPage(record, );
-
-    }*/
 }

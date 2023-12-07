@@ -17,14 +17,12 @@ public class RecordIterator {
     }
 
     public Record getNextRecord() {
-        if (cursor == nbRecord)
+        if (cursor == nbRecord) {
             return null;
-        
+        }
         Record record = new Record(tabinfo);
         record.readFromBuffer(buffer, buffer.position());
-
         cursor++;
-
         return record;
     }
 

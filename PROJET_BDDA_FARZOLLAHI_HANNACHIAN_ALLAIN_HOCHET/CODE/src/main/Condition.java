@@ -3,17 +3,15 @@ import java.util.regex.Pattern;
 
 public class Condition {
     public static Pattern PATTERN = Pattern.compile("^(\\w+)(=|<|>|<=|>=|<>)(.+)$");
-
     private String column;
     private String operator;
     private String value;
 
     public Condition(String condition) {
         Matcher matcher = PATTERN.matcher(condition);
-
-        if (!matcher.matches())
+        if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid condition: " + condition);
-
+        }
         column = matcher.group(1);
         operator = matcher.group(2);
         value = matcher.group(3);
@@ -42,31 +40,14 @@ public class Condition {
         int index = tableInfo.getColumnIndex(column);
         String recValue = record.getRecValues()[index];
         int compareResult = compare(tableInfo.getColumns()[index].getType(), recValue, this.value);
-        boolean res;
-
-        switch (operator) {
-            case "=":
-                res = compareResult == 0;
-                break;
-            case "<":
-                res = compareResult < 0;
-                break;
-            case ">":
-                res = compareResult > 0;
-                break;
-            case "<=":
-                res = compareResult <= 0;
-                break;
-            case ">=":
-                res = compareResult >= 0;
-                break;
-            case "<>":
-                res = compareResult != 0;
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown operator: " + operator);
-        }
-
-        return res;
+        return switch (operator) {
+            case "=" -> compareResult == 0;
+            case "<" -> compareResult < 0;
+            case ">" -> compareResult > 0;
+            case "<=" -> compareResult <= 0;
+            case ">=" -> compareResult >= 0;
+            case "<>" -> compareResult != 0;
+            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+        };
     }
 }

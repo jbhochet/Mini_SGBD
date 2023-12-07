@@ -8,7 +8,6 @@ public class Main {
         DBParams.DMFileCount = 4;
         DBParams.SGBDPageSize = 4096;
         DBParams.FrameCount = 2;
-
         // DatabaseManager
         DatabaseManager databaseManager = DatabaseManager.getInstance();
 
@@ -19,7 +18,6 @@ public class Main {
             err.printStackTrace();
             System.exit(1);
         }
-
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
         String command;
@@ -39,16 +37,13 @@ public class Main {
                     err.printStackTrace();
                 }
             }
-        }
-
-        try {
+        } try {
             databaseManager.finish();
         } catch (IOException | ClassNotFoundException err) {
             System.err.println("Can't stop the SGBD!");
             err.printStackTrace();
             System.exit(1);
         }
-
         scanner.close();
     }
 }

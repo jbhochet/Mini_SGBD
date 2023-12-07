@@ -77,6 +77,5 @@ public class TestRecord {
         } catch (IOException err) {
             System.err.println(err);
         }
-
     }
 }

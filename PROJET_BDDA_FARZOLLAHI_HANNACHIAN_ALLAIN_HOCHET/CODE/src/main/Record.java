@@ -34,14 +34,12 @@ public class Record {
 
     public int writeToBuffer(ByteBuffer buffer, int pos) {
         int tempPosition;
-
         // if the tableinfo is variable, we must write data after the offset directory
         if (tabInfo.isVariable()) {
             buffer.position(pos + (recValues.length * 2 * 4));
         } else {
             buffer.position(pos);
         }
-
         for (int i = 0; i < recValues.length; i++) {
             String value = recValues[i];
             ColInfo col = tabInfo.getColumns()[i];
@@ -77,14 +75,14 @@ public class Record {
                 buffer.position(tempPosition);
             }
         }
-
         return buffer.position() - pos;
     }
 
     private String getString(ByteBuffer buffer, int size) {
-        StringBuffer sb = new StringBuffer(size);
-        for(int i = 0; i<size; i++)
+        StringBuilder sb = new StringBuilder(size);
+        for (int i = 0; i < size; i++) {
             sb.append(buffer.getChar());
+        }
         return sb.toString();
     }
 
@@ -95,10 +93,8 @@ public class Record {
         } else {
             buffer.position(pos);
         }
-
         for (int i = 0; i < tabInfo.getNumberOfColumns(); i++) {
             ColInfo col = tabInfo.getColumns()[i];
-
             switch (col.getType()) {
                 case INT:
                     int intValue = buffer.getInt();
@@ -122,20 +118,17 @@ public class Record {
                     throw new IllegalArgumentException("Unsupported column type: " + col.getType());
             }
         }
-
         return buffer.position() - pos;
     }
 
     public int getSize() {
         int size = 0;
-
-        if (tabInfo.isVariable())
+        if (tabInfo.isVariable()) {
             size += recValues.length * 4 * 2;
-
+        }
         for (int i = 0; i < recValues.length; i++) {
             String value = recValues[i];
             DataType colType = tabInfo.getColumns()[i].getType();
-
             switch (colType) {
                 case INT:
                     size += Integer.BYTES;
@@ -153,13 +146,11 @@ public class Record {
                     throw new IllegalArgumentException("Unsupported column type: " + colType);
             }
         }
-
         return size;
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("Record: (");
         for (String val : recValues) {
             sb.append(val).append(", ");

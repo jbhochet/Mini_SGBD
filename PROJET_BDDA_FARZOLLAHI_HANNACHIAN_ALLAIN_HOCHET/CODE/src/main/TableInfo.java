@@ -12,8 +12,8 @@ public class TableInfo implements Serializable {
         this.headerPageId = headerPageId;
         // check if this table contains varstring
         this.variable = false;
-        for(ColInfo colInfo: columns){
-            if(colInfo.getType() == DataType.VARSTRING) {
+        for (ColInfo colInfo : columns) {
+            if (colInfo.getType() == DataType.VARSTRING) {
                 this.variable = true;
                 break;
             }
@@ -49,5 +49,4 @@ public class TableInfo implements Serializable {
     public boolean isVariable() {
         return variable;
     }
-
 }

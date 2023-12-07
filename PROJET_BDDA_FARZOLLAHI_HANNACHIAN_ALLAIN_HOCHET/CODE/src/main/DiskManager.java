@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.Stack;
 
 public class DiskManager {
-
     private static DiskManager instance;
     private File[] dataFiles;
     private Stack<PageId> deallocatedPages;
@@ -20,7 +19,6 @@ public class DiskManager {
     // Singleton : getInstance method
     public static DiskManager getInstance() {
         if (instance == null) {
-
             instance = new DiskManager();
         }
         return instance;
@@ -51,8 +49,9 @@ public class DiskManager {
 
     // Allouer une page
     public PageId AllocPage() throws IOException {
-        if (!deallocatedPages.empty())
+        if (!deallocatedPages.empty()) {
             return deallocatedPages.pop();
+        }
         int fileId = lightestFileId();
         RandomAccessFile raf = new RandomAccessFile(dataFiles[fileId], "rw");
         raf.seek(dataFiles[fileId].length());
@@ -62,8 +61,9 @@ public class DiskManager {
     }
 
     public void ReadPage(PageId pageId, ByteBuffer buffer) throws IOException {
-        if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length)
+        if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length) {
             throw new IllegalArgumentException("the specified file does not exist!");
+        }
         File file = dataFiles[pageId.getFileIdx()];
         if (pageId.getPageIdx() < 0 || file.length() < (long) pageId.getPageIdx() * DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
@@ -78,15 +78,15 @@ public class DiskManager {
     }
 
     public void WritePage(PageId pageId, ByteBuffer buffer) throws IOException {
-        if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length)
+        if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length) {
             throw new IllegalArgumentException("The specified file does not exist!");
+        }
         File file = dataFiles[pageId.getFileIdx()];
         if (pageId.getPageIdx() < 0 || file.length() < (long) pageId.getPageIdx() * DBParams.SGBDPageSize) {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
-        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement
-                                                                           // spécifié
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement spécifié
         dataFile.write(buffer.array()); // Écrire le contenu du ByteBuffer dans le fichier
         dataFile.close();
     }
@@ -112,5 +112,4 @@ public class DiskManager {
         sb.append("===============");
         return sb.toString();
     }
-
 }
