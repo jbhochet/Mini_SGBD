@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public class DeleteCommand implements ICommand {
     public static final Pattern PATTERN = Pattern.compile("^DELETE \\* FROM (\\w+)( WHERE (.+))?$");
     private String tableName;
-    private List<Condition> conditions;
+    private String conditions;
 
     public DeleteCommand(String command) {
         Matcher matcher = PATTERN.matcher(command);
@@ -16,12 +16,9 @@ public class DeleteCommand implements ICommand {
             throw new IllegalArgumentException("Invalid command");
         }
         tableName = matcher.group(1);
-        conditions = null;
-        if (matcher.group(3) != null) {
-            conditions = ConditionUtil.parseConditions(matcher.group(3));
-        }
+        conditions = matcher.group(3);
     }
-    
+
     @Override
     public void execute() throws IOException {
         DiskManager diskManager = DiskManager.getInstance();
@@ -33,10 +30,10 @@ public class DeleteCommand implements ICommand {
         RecordIterator recordIterator;
         Record record;
         int nb = 0;
-        for(PageId page: fileManager.getDataPages(tableInfo)) {
+        for (PageId page : fileManager.getDataPages(tableInfo)) {
             recordIterator = new RecordIterator(tableInfo, page);
-            while((record = recordIterator.getNextRecord()) != null) {
-                if(conditions != null && !ConditionUtil.checkAll(record, conditions)) {
+            while ((record = recordIterator.getNextRecord()) != null) {
+                if (conditions != null && !ConditionUtil.checkAll(record, conditions)) {
                     listRecords.add(record);
                 } else {
                     nb++;
@@ -45,13 +42,13 @@ public class DeleteCommand implements ICommand {
             recordIterator.close();
             diskManager.DeallocPage(page);
         }
-        System.out.println("Total deleted records="+nb);
+        System.out.println("Total deleted records=" + nb);
         buffer = BufferManager.getInstance().getPage(tableInfo.getHeaderPageId());
         buffer.position(0);
         buffer.putInt(-1);
         buffer.putInt(-1);
-        BufferManager.getInstance().freePage(tableInfo.getHeaderPageId(),true);
-        for (Record records:listRecords) {
+        BufferManager.getInstance().freePage(tableInfo.getHeaderPageId(), true);
+        for (Record records : listRecords) {
             fileManager.InsertRecordIntoTable(records);
         }
     }
