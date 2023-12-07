@@ -34,6 +34,8 @@ public class DatabaseManager {
             cmd = new ImportCommand(command);
         }else if (command.startsWith("SELECTINDEX")) {
             cmd = new SelectIndexCommand(command);
+        }else if (command.startsWith("DELETE")) {
+            cmd = new DeleteCommand(command);
         } else {
             throw new IllegalArgumentException("Unknown command: "+command);
         }

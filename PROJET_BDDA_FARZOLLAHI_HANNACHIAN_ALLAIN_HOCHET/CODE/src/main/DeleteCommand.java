@@ -47,11 +47,16 @@ public class DeleteCommand implements ICommand {
             }
             recordIterator.close();
             diskManager.DeallocPage(page);
-            buffer=BufferManager.getInstance().getPage(tableInfo.getHeaderPageId());
-            buffer.position(0);
-            buffer.putInt(-1);
-            buffer.putInt(-1);
             
+        }
+        System.out.println("Total deleted records="+nb);
+        buffer=BufferManager.getInstance().getPage(tableInfo.getHeaderPageId());
+        buffer.position(0);
+        buffer.putInt(-1);
+        buffer.putInt(-1);
+        BufferManager.getInstance().freePage(tableInfo.getHeaderPageId(),true);
+        for(Record records:listRecords){
+            fileManager.InsertRecordIntoTable(records);
         }
     }
 }
