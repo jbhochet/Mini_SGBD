@@ -5,7 +5,6 @@
 * [Execution](#execution)
 * [Utilisation](#utilisation)
 * [Structure](#structure)
-* [Remarques](#remarques)
 * [Licence](#licence)
 * [Contributeurs](#contributeurs)
 
@@ -51,19 +50,10 @@ git clone https://github.com/jbhochet/Projet_BDDA.git
 
 ## Execution
 
-Pour exécuter le projet, utilisez le script approprié en fonction de votre système d'exploitation pour compiler et exécuter le programme : 
+Pour exécuter le projet, utilisez le script Python pour compiler et exécuter le programme (sur tous les systèmes d'exploitation) : 
 
-* Pour Windows : 
-```bash
-compile_and_run.bat
-```
-* Pour Linux : 
-```bash
-./compile_run.bash
-```
-* Avec Python (sur tous les systèmes d'exploitation) 
-```bash
-python compile_run.py
+```commandline
+python manager.py
 ```
 
 ## Utilisation
@@ -131,19 +121,10 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 
 ### [Code](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE) : Racine du projet
 
-| Répertoire / Fichier                                                                                                            | Description                                             |
-|---------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| [scripts](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts)       | Contient les scripts pour la compilation et l'exécution |
-| [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src)               | Contient le code source du projet                       |
-| [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) | Script Python pour gérer certaines tâches du SGBD       |
-
-### [scripts](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts) : Scripts pour la compilation et l'exécution
-
-| Fichier                                                                                                                                                   | Description                                              |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
-| [compile_and_run.bat](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts/compile_and_run.bat) | Script de compilation et d'exécution pour Windows        |
-| [compile_run.bash](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts/compile_run.bash)       | Script de compilation et d'exécution pour Linux          |
-| [compile_run.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/scripts/compile_run.py)           | Script de compilation et d'exécution en utilisant Python |
+| Répertoire / Fichier                                                                                                            | Description                                                  |
+|---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src)               | Contient le code source du projet                            |
+| [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) | Contient le script Python pour la compilation et l'exécution |
 
 ### [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src) : Code source du projet
 
@@ -193,15 +174,13 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 | [TestFileManager.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/test/TestFileManager.java)     | Test pour évaluer le fonctionnement du gestionnaire de fichiers         |
 | [TestRecord.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/test/TestRecord.java)               | Test pour évaluer le fonctionnement des enregistrements                 |
 
-## Remarques
-
 ## Licence
 
-Projet_BDDA (Mini SGBD) est sous licence ...
+Projet_BDDA (Mini SGBD) est sous licence [MIT](https://github.com/jbhochet/Projet_BDDA/blob/main/LICENSE).
 
 ## Contributeurs
 
+* [Jean-Baptiste Hochet](https://github.com/jbhochet)
 * [Yanis Allain](https://github.com/Kemoory)
 * [Sepanta Farzollahi](https://github.com/sepanta007)
 * [Hagop Hannachian](https://github.com/hagop-h)
-* [Jean Baptiste Hochet](https://github.com/jbhochet)
