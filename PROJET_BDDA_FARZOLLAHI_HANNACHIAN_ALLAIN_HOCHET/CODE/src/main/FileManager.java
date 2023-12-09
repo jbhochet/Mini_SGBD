@@ -17,6 +17,7 @@ public class FileManager {
     }
 
     // TODO: make this method private
+    // Allocates a page in which two pageids will be written, corresponding to lists of data pages
     public PageId createNewHeaderPage() throws IOException {
         PageId headerPageId = DiskManager.getInstance().AllocPage();
         BufferManager bufferManager = BufferManager.getInstance();
@@ -33,6 +34,7 @@ public class FileManager {
         return headerPageId;
     }
 
+    // Add an empty data page to the heap file related to the relation given by the tabInfo and return it's PageId 
     private PageId addDataPage(TableInfo tabInfo) throws IOException {
         PageId newDataPage = DiskManager.getInstance().AllocPage();
         BufferManager bufferManager = BufferManager.getInstance();
@@ -71,6 +73,7 @@ public class FileManager {
         return DBParams.SGBDPageSize - posFreeSpace - 4 - 4 - m * 8 - 8; // -8 for the future slot dir entry
     }
 
+    // Return the pageId of a page which have enough place to have the relation given by tabInfo
     private PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         PageId current = tabInfo.getHeaderPageId();
@@ -91,6 +94,7 @@ public class FileManager {
         return res;
     }
 
+    // Write a record in a page and return it's recordId
     private RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer;
@@ -112,6 +116,7 @@ public class FileManager {
     }
 
     // TODO: make this method private
+    // Returns the list of records contained in an identified page
     public List<Record> getRecordsInDataPage(TableInfo tabInfo, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer = bufferManager.getPage(pageId);
@@ -128,6 +133,7 @@ public class FileManager {
     }
 
     // TODO: make this method private
+    // Return the list of pageId data pages like they are in header page
     public List<PageId> getDataPages(TableInfo tabInfo) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         List<PageId> listDataPage = new ArrayList<>();
@@ -163,11 +169,12 @@ public class FileManager {
         return listDataPage;
     }
 
+    // Insertion of a record in a relation
     public RecordId InsertRecordIntoTable(Record record) throws IOException {
-        // Step 1: Get the TableInfo for the table associated with the record
+        // Get the TableInfo for the table associated with the record
         TableInfo tabInfo = record.getTabInfo();
 
-        // Step 2: Find a page with enough space for the new record
+        // Find a page with enough space for the new record
         PageId dataPageId = getFreeDataPageId(tabInfo, record.getSize());
         if (dataPageId == null) {
             dataPageId = addDataPage(tabInfo);
@@ -179,7 +186,7 @@ public class FileManager {
             dataPageId = addDataPage(tabInfo);
         }
 
-        // Step 3: Write the record to the identified data page
+        // Write the record to the identified data page
         RecordId rid = writeRecordToDataPage(record, dataPageId);
 
         return rid;
