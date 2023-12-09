@@ -16,6 +16,7 @@ public class RecordIterator {
         reset();
     }
 
+    // Browse the record of one page
     public Record getNextRecord() {
         if (cursor == nbRecord) {
             return null;
