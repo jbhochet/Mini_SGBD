@@ -32,6 +32,7 @@ public class Record {
         }
     }
 
+    // Write in the buffer the values of an instance of Record
     public int writeToBuffer(ByteBuffer buffer, int pos) {
         int tempPosition;
         // if the tableinfo is variable, we must write data after the offset directory
@@ -86,6 +87,7 @@ public class Record {
         return sb.toString();
     }
 
+    // Read the values of a record that is in the buffer
     public int readFromBuffer(ByteBuffer buffer, int pos) {
         // if the tableinfo is variable, we must read data after the offset directory
         if (tabInfo.isVariable()) {
