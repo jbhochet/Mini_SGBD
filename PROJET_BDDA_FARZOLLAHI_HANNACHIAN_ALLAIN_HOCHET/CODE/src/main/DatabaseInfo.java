@@ -28,6 +28,7 @@ public class DatabaseInfo {
         return new File(path);
     }
 
+    // Load the informations of DBinfo.save in the intance of DatabaseInfo
     public void init() throws IOException, ClassNotFoundException {
         File file = getSaveFile();
         if (!file.exists()) {
@@ -48,6 +49,7 @@ public class DatabaseInfo {
         }
     }
 
+    // Save the information in a file named DBinfo.save
     public void finish() throws IOException {
         FileOutputStream fos = new FileOutputStream(getSaveFile());
         ObjectOutputStream oos = new ObjectOutputStream(fos);
