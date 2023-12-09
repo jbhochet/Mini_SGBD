@@ -75,8 +75,7 @@ public class BufferManager {
 		return res;
 	}
 
-	// Get the current page if it's in frames or load it with lfu. Access is stored
-	// in frame
+	// Get the current page if it's in frames or load it with lfu. Access is stored in frame
 	public ByteBuffer getPage(PageId pageId) throws IOException {
 		Frame frame = findFrame(pageId);
 		if (frame == null) {
