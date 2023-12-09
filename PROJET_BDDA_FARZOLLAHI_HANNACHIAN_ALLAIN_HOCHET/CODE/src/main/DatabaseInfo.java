@@ -59,10 +59,12 @@ public class DatabaseInfo {
         tables.clear();
     }
 
+    // Add an instance of TableInfo in the map
     public void addTableInfo(TableInfo tableInfo) {
         tables.put(tableInfo.getName(), tableInfo);
     }
 
+    // Take the name of a relation and return the associated instance of TableInfo
     public TableInfo getTableInfo(String tableName) {
         return tables.get(tableName);
     }
