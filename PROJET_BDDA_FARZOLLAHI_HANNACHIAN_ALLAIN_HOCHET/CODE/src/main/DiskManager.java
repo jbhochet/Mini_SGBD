@@ -47,7 +47,7 @@ public class DiskManager {
         return res;
     }
 
-    // Allouer une page
+    // Page allocation
     public PageId AllocPage() throws IOException {
         if (!deallocatedPages.empty()) {
             return deallocatedPages.pop();
@@ -60,6 +60,7 @@ public class DiskManager {
         return new PageId(fileId, (int) dataFiles[fileId].length() / DBParams.SGBDPageSize - 1);
     }
 
+    //Read an allocate page
     public void ReadPage(PageId pageId, ByteBuffer buffer) throws IOException {
         if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length) {
             throw new IllegalArgumentException("the specified file does not exist!");
@@ -69,14 +70,15 @@ public class DiskManager {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "r");
-        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // modifier la position du pointeur
-        int bytesRead = dataFile.getChannel().read(buffer); // Lire le contenu de la page dans le ByteBuffer
-        if (bytesRead != -1) { // En Java, la valeur -1 est retournée pour indiquer la fin du fichier
-            buffer.flip(); // Préparer le ByteBuffer pour la lecture
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // change pointer position
+        int bytesRead = dataFile.getChannel().read(buffer); // Read the content of the page in the ByteBuffer
+        if (bytesRead != -1) { // In Java the value -1 is return to indicate the end of the file
+            buffer.flip(); // Prepare the ByteBuffer for reading
         }
         dataFile.close();
     }
 
+    // Write what is in the buffer at the position of the pageId
     public void WritePage(PageId pageId, ByteBuffer buffer) throws IOException {
         if (pageId.getFileIdx() < 0 || pageId.getFileIdx() > dataFiles.length) {
             throw new IllegalArgumentException("The specified file does not exist!");
@@ -86,15 +88,17 @@ public class DiskManager {
             throw new IllegalArgumentException("La page spécifiée n'existe pas.");
         }
         RandomAccessFile dataFile = new RandomAccessFile(file, "rw");
-        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Positionner le pointeur à l'emplacement spécifié
-        dataFile.write(buffer.array()); // Écrire le contenu du ByteBuffer dans le fichier
+        dataFile.seek((long) pageId.getPageIdx() * DBParams.SGBDPageSize); // Position pointer at specified location
+        dataFile.write(buffer.array()); // Write the content of the ByteBuffer in the file
         dataFile.close();
     }
 
+    // Desallocate page and put it in the list of avaible pages
     public void DeallocPage(PageId pageId) {
         deallocatedPages.add(pageId);
     }
 
+    // Return the number of currently allocated pages in the DiskManger
     public int GetCurrentCountAllocPages() {
         int pageCount = 0;
         for (File file : dataFiles)
