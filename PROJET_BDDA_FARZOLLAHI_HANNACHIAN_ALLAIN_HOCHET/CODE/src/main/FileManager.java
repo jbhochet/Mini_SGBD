@@ -74,7 +74,7 @@ public class FileManager {
     }
 
     // Return the pageId of a page which have enough place to have the relation given by tabInfo
-    public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
+    private PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         PageId current = tabInfo.getHeaderPageId();
         PageId temp;
@@ -95,7 +95,7 @@ public class FileManager {
     }
 
     // Write a record in a page and return it's recordId
-    public RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
+    private RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer;
         buffer = bufferManager.getPage(pageId);
@@ -177,12 +177,6 @@ public class FileManager {
         // Find a page with enough space for the new record
         PageId dataPageId = getFreeDataPageId(tabInfo, record.getSize());
         if (dataPageId == null) {
-            dataPageId = addDataPage(tabInfo);
-        }
-
-        if (dataPageId == null) {
-            // Handle the case where there is no page with enough space
-            // You might need to create a new data page
             dataPageId = addDataPage(tabInfo);
         }
 
