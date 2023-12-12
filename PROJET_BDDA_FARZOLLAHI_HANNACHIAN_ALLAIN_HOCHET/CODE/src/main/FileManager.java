@@ -35,7 +35,7 @@ public class FileManager {
     }
 
     // Add an empty data page to the heap file related to the relation given by the tabInfo and return it's PageId 
-    private PageId addDataPage(TableInfo tabInfo) throws IOException {
+    public PageId addDataPage(TableInfo tabInfo) throws IOException {
         PageId newDataPage = DiskManager.getInstance().AllocPage();
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer = bufferManager.getPage(newDataPage);
@@ -74,7 +74,7 @@ public class FileManager {
     }
 
     // Return the pageId of a page which have enough place to have the relation given by tabInfo
-    private PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
+    public PageId getFreeDataPageId(TableInfo tabInfo, int sizeRecord) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         PageId current = tabInfo.getHeaderPageId();
         PageId temp;
@@ -95,7 +95,7 @@ public class FileManager {
     }
 
     // Write a record in a page and return it's recordId
-    private RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
+    public RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer;
         buffer = bufferManager.getPage(pageId);
