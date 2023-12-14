@@ -53,7 +53,7 @@ git clone https://github.com/jbhochet/Projet_BDDA.git
 Pour exécuter le projet, utilisez le script Python pour compiler et exécuter le programme (sur tous les systèmes d'exploitation) : 
 
 ```commandline
-python manager.py
+python manager.py ./DB
 ```
 
 ## Utilisation
