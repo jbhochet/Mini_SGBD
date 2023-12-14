@@ -83,6 +83,7 @@ public class SelectCommand implements ICommand {
                         recordIteratorS.reset();
                     }
                     recordIteratorS.close();
+                    recordIteratorR.reset();
                 }
                 recordIteratorR.close();
             }
