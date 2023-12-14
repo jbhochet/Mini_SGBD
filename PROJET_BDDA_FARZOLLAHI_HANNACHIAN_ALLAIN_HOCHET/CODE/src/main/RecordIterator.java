@@ -7,6 +7,7 @@ public class RecordIterator {
     private ByteBuffer buffer;
     private int cursor;
     private int nbRecord;
+    private int lastPos;
 
     public RecordIterator(TableInfo tabinfo, PageId pageId) throws IOException {
         this.tabinfo = tabinfo;
@@ -21,9 +22,11 @@ public class RecordIterator {
         if (cursor == nbRecord) {
             return null;
         }
+        buffer.position(lastPos);
         Record record = new Record(tabinfo);
         record.readFromBuffer(buffer, buffer.position());
         cursor++;
+        lastPos=buffer.position();
         return record;
     }
 
@@ -34,5 +37,6 @@ public class RecordIterator {
     public void reset() {
         cursor = 0;
         buffer.position(8); // after the page id
+        lastPos = buffer.position();
     }
 }

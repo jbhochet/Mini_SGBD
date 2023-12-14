@@ -62,17 +62,19 @@ public class SelectCommand implements ICommand {
             TableInfo tableInfoS = databaseInfo.getTableInfo(tablesName[1]);
 
             // for each page of R
-            for (PageId page : fileManager.getDataPages(tableInfoR)) {
-                RecordIterator recordIteratorR = new RecordIterator(tableInfoR, page);
+            for (PageId pageR : fileManager.getDataPages(tableInfoR)) {
+                RecordIterator recordIteratorR = new RecordIterator(tableInfoR, pageR);
                 Record recordR;
 
                 // for each page of S
-                for (PageId page2 : fileManager.getDataPages(tableInfoS)) {
-                    RecordIterator recordIteratorS = new RecordIterator(tableInfoS, page2);
+                for (PageId pageS : fileManager.getDataPages(tableInfoS)) {
+                    RecordIterator recordIteratorS = new RecordIterator(tableInfoS, pageS);
                     Record recordS;
 
                     while ((recordR = recordIteratorR.getNextRecord()) != null) {
+                        System.out.println("boucle R");
                         while ((recordS = recordIteratorS.getNextRecord()) != null) {
+                            System.out.println("boucle S");
                             // Check if the condition is ok
                             if (conditions == null
                                     || ConditionUtil.checkAllJoinConditions(recordR, recordS, conditions)) {
@@ -80,7 +82,9 @@ public class SelectCommand implements ICommand {
                                 total++;
                             }
                         }
+                        System.out.println("avant");
                         recordIteratorS.reset();
+                        System.out.println("après");
                     }
                     recordIteratorS.close();
                 }
