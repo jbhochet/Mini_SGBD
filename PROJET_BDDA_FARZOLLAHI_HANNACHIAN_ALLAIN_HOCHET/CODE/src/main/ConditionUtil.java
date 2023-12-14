@@ -2,7 +2,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConditionUtil {
-    public static final Pattern COND_PATTERN = Pattern.compile("^(\\w+)(=|<|>|<=|>=|<>)(.+)$");
+    public static final Pattern COND_PATTERN = Pattern.compile("^(\\w+)(=|<|>|<=|>=|<>)([^=<>].+)$");
     public static final Pattern JOIN_COND_PATTERN = Pattern.compile("^\\w+\\.(\\w+)(=|<|>|<=|>=|<>)\\w+\\.(\\w+)$");
 
     private static int compare(DataType type, String val1, String val2) {
