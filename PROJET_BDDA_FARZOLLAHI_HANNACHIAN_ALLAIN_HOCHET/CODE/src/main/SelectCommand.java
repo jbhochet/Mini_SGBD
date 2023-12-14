@@ -72,9 +72,7 @@ public class SelectCommand implements ICommand {
                     Record recordS;
 
                     while ((recordR = recordIteratorR.getNextRecord()) != null) {
-                        System.out.println("boucle R");
                         while ((recordS = recordIteratorS.getNextRecord()) != null) {
-                            System.out.println("boucle S");
                             // Check if the condition is ok
                             if (conditions == null
                                     || ConditionUtil.checkAllJoinConditions(recordR, recordS, conditions)) {
@@ -82,9 +80,7 @@ public class SelectCommand implements ICommand {
                                 total++;
                             }
                         }
-                        System.out.println("avant");
                         recordIteratorS.reset();
-                        System.out.println("après");
                     }
                     recordIteratorS.close();
                 }
