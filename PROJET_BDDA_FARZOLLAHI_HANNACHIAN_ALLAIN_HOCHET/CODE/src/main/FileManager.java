@@ -16,7 +16,6 @@ public class FileManager {
         return instance;
     }
 
-    // TODO: make this method private
     // Allocates a page in which two pageids will be written, corresponding to lists of data pages
     public PageId createNewHeaderPage() throws IOException {
         PageId headerPageId = DiskManager.getInstance().AllocPage();
@@ -94,7 +93,7 @@ public class FileManager {
         return res;
     }
 
-    // Write a record in a page and return it's recordId
+    // Write a record on a page and return it's recordId
     private RecordId writeRecordToDataPage(Record record, PageId pageId) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
         ByteBuffer buffer;
@@ -115,24 +114,6 @@ public class FileManager {
         return new RecordId(pageId, m);
     }
 
-    // TODO: make this method private
-    // Returns the list of records contained in an identified page
-    public List<Record> getRecordsInDataPage(TableInfo tabInfo, PageId pageId) throws IOException {
-        BufferManager bufferManager = BufferManager.getInstance();
-        ByteBuffer buffer = bufferManager.getPage(pageId);
-        Record record;
-        List<Record> records = new ArrayList<>();
-        int m = buffer.getInt(DBParams.SGBDPageSize - 8);
-        buffer.position(8); // after the next page id
-        for (int i = 0; i < m; i++) {
-            record = new Record(tabInfo);
-            record.readFromBuffer(buffer, buffer.position());
-            records.add(record);
-        }
-        return records;
-    }
-
-    // TODO: make this method private
     // Return the list of pageId data pages like they are in header page
     public List<PageId> getDataPages(TableInfo tabInfo) throws IOException {
         BufferManager bufferManager = BufferManager.getInstance();
@@ -140,7 +121,7 @@ public class FileManager {
         ByteBuffer buffer;
         PageId pageId;
         PageId tempPageId;
-        // Read non filled pages
+        // Read non-filled pages
         buffer = bufferManager.getPage(tabInfo.getHeaderPageId());
         buffer.position(0);
         pageId = new PageId(buffer.getInt(), buffer.getInt());
@@ -181,8 +162,6 @@ public class FileManager {
         }
 
         // Write the record to the identified data page
-        RecordId rid = writeRecordToDataPage(record, dataPageId);
-
-        return rid;
+        return writeRecordToDataPage(record, dataPageId);
     }
 }

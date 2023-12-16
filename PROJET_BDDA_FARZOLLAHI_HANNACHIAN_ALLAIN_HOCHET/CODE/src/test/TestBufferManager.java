@@ -32,8 +32,6 @@ public class TestBufferManager {
          * Test BufferManager
          */
 
-        diskManager = DiskManager.getInstance();
-
         try {
             diskManager.init();
         } catch (IOException err) {

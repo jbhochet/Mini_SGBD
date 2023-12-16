@@ -89,6 +89,6 @@ public class SelectCommand implements ICommand {
             }
         }
 
-        System.out.println("Total records=" + String.valueOf(total));
+        System.out.println("Total records=" + total);
     }
 }

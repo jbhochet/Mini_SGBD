@@ -2,12 +2,11 @@ import java.util.List;
 
 public class BPlusTree {
     private BPlusTreeNode root;
-    private int order; // Order of the tree
 
     // Constructor for BPlusTree
     public BPlusTree(int order) {
         this.root = new BPlusTreeLeafNode(order);
-        this.order = order;
+        // Order of the tree
     }
 
     // Method to create B+Tree index from a list of records and a specific column index
@@ -39,6 +38,5 @@ public class BPlusTree {
     // Method to delete records with a specific value from the B+Tree
     public void delete(String value) {
         // TODO: Implement deletion in the B+Tree
-        // Tired as fuck !
     }
 }

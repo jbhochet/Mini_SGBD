@@ -39,8 +39,8 @@ public class TestRecord {
             PageId page = diskManager.AllocPage();
 
             ColInfo[] columns = new ColInfo[] {
-                    new ColInfo("prenom", DataType.STRING, 5), // 5*2
-                    new ColInfo("nom", DataType.STRING, 5), // 5*2
+                    new ColInfo("last name", DataType.STRING, 5), // 5*2
+                    new ColInfo("name", DataType.STRING, 5), // 5*2
                     new ColInfo("age", DataType.INT) // 4
             };
 

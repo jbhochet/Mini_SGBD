@@ -18,7 +18,7 @@ public class ConditionUtil {
         } else if (type == DataType.STRING || type == DataType.VARSTRING) {
             res = val1.compareTo(val2);
         } else {
-            throw new IllegalArgumentException("Unknow type: " + type);
+            throw new IllegalArgumentException("Unknown type: " + type);
         }
         return res;
     }

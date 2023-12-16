@@ -21,7 +21,7 @@ public class DatabaseManager {
     }
 
     public void processCommand(String command) throws IOException {
-        ICommand cmd = null;
+        ICommand cmd;
         if (command.startsWith("CREATE TABLE")) {
             cmd = new CreateTableCommand(command);
         } else if (command.startsWith("RESETDB")) {
@@ -32,8 +32,6 @@ public class DatabaseManager {
         	cmd = new SelectCommand(command);
         } else if (command.startsWith("IMPORT INTO")) {
             cmd = new ImportCommand(command);
-        } else if (command.startsWith("SELECTINDEX")) {
-            cmd = new SelectIndexCommand(command);
         } else if (command.startsWith("DELETE")) {
             cmd = new DeleteCommand(command);
         } else {

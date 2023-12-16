@@ -4,7 +4,6 @@ import java.nio.file.Files;
 public class TestFileManager {
     public static void main(String[] args) throws IOException {
         DiskManager diskManager;
-        BufferManager bufferManager;
         FileManager fileManager;
 
         // Initialize DiskManager
@@ -31,8 +30,6 @@ public class TestFileManager {
             System.err.println(err);
             System.exit(1);
         }
-
-        bufferManager = BufferManager.getInstance();
 
         // Initialize FileManager
         fileManager = FileManager.getInstance();

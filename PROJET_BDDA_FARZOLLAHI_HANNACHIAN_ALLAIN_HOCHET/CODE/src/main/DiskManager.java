@@ -93,7 +93,7 @@ public class DiskManager {
         dataFile.close();
     }
 
-    // Desallocate page and put it in the list of avaible pages
+    // Deallocate page and put it in the list of available pages
     public void DeallocPage(PageId pageId) {
         deallocatedPages.add(pageId);
     }

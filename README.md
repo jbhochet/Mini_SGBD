@@ -27,9 +27,7 @@ Il comprend des composants tels que le gestionnaire de tampon, le gestionnaire d
 4. Commande [SELECT](#commande-select) : La commande `SELECT` récupère des données d'une table en fonction de certaines conditions.
 5. Commande [IMPORT](#commande-import) : La commande `IMPORT` permet l'insertion de données en masse dans une table (insertion par lot).
 6. Commande [DELETE](#commande-delete) : La commande `DELETE` supprime des enregistrements d'une table en fonction de certaines conditions.
-7. Commande [CREATEINDEX](#commande-createindex) : La commande `CREATEINDEX` crée un index sur une table pour améliorer les performances des opérations de recherche.
-8. Commande [SELECTINDEX](#commande-selectindex) : La commande `SELECTINDEX` effectue une sélection en utilisant un index.
-9. Commande [Jointure](#commande-jointure) : La commande de jointure permet de combiner les données de deux tables en fonction de certaines conditions.
+7. Commande [Jointure](#commande-jointure) : La commande de jointure permet de combiner les données de deux tables en fonction de certaines conditions.
 
 ## Installation
 
@@ -97,17 +95,6 @@ IMPORT INTO nomRelation nomFichier.csv
 DELETE FROM nomRelation WHERE condition1 AND condition2 AND ... AND conditionN
 ```
 
-### Commande CREATEINDEX
-
-```sql
-CREATEINDEX ON nomRelation KEY=nomColonne ORDER=ordre
-```
-
-### Commande SELECTINDEX
-
-```sql
-SELECTINDEX * FROM nomRelation WHERE nomColonne=valeur
-```
 
 ### Commande Jointure
 
@@ -119,12 +106,7 @@ SELECT * FROM nomRel1, nomRel2 WHERE condition1 AND condition2 AND ... AND condi
 
 Le projet est organisé en plusieurs répertoires et fichiers :
 
-### [Code](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE) : Racine du projet
-
-| Répertoire / Fichier                                                                                                            | Description                                                  |
-|---------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src)               | Contient le code source du projet                            |
-| [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) | Contient le script Python pour la compilation et l'exécution |
+Note : [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) contient le script Python pour la compilation et l'exécution.
 
 ### [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src) : Code source du projet
 
@@ -139,14 +121,12 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
 | [BufferManager.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/BufferManager.java)           | Gestion du tampon mémoire                                  |
 | [ColInfo.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/ColInfo.java)                       | Information sur les colonnes d'une table                   |
-| [Condition.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/Condition.java)                   | Représentation des conditions utilisées dans les commandes |
 | [ConditionUtil.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/ConditionUtil.java)           | Utilitaire pour évaluer les conditions                     |
-| [CreateIndexCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/CreateIndexCommand.java) | Commande de création d'index                               |
 | [CreateTableCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/CreateTableCommand.java) | Commande de création de table                              |
+| [DBParams.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DBParams.java)                     | Paramètres de la base de données                           |
+| [DataType.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DataType.java)                     | Types de données pris en charge                            |
 | [DatabaseInfo.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DatabaseInfo.java)             | Informations sur la base de données                        |
 | [DatabaseManager.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DatabaseManager.java)       | Gestionnaire de base de données                            |
-| [DataType.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DataType.java)                     | Types de données pris en charge                            |
-| [DBParams.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DBParams.java)                     | Paramètres de la base de données                           |
 | [DeleteCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DeleteCommand.java)           | Commande de suppression d'enregistrements                  |
 | [DiskManager.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/DiskManager.java)               | Gestion du disque                                          |
 | [FileManager.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/FileManager.java)               | Gestionnaire de fichiers                                   |
@@ -161,7 +141,6 @@ Le projet est organisé en plusieurs répertoires et fichiers :
 | [RecordIterator.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/RecordIterator.java)         | Itérateur sur les enregistrements                          |
 | [ResetDBCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/ResetDBCommand.java)         | Commande de réinitialisation de la base de données         |
 | [SelectCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/SelectCommand.java)           | Commande de sélection de données                           |
-| [SelectIndexCommand.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/SelectIndexCommand.java) | Commande de sélection avec utilisation d'index             |
 | [TableInfo.java](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/main/TableInfo.java)                   | Informations sur une table                                 |
 
 ### [test](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src/test) : Tests pour évaluer les différentes classes
