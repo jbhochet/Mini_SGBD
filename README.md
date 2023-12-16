@@ -106,7 +106,7 @@ SELECT * FROM nomRel1, nomRel2 WHERE condition1 AND condition2 AND ... AND condi
 
 Le projet est organisé en plusieurs répertoires et fichiers :
 
-Note : [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/manager.py) contient le script Python pour la compilation et l'exécution.
+Note : [manager.py](https://github.com/jbhochet/Projet_BDDA/blob/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/manager.py) contient le script Python pour la compilation et l'exécution.
 
 ### [src](https://github.com/jbhochet/Projet_BDDA/tree/main/PROJET_BDDA_FARZOLLAHI_HANNACHIAN_ALLAIN_HOCHET/CODE/src) : Code source du projet
 
